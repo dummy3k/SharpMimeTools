@@ -62,7 +62,7 @@ namespace anmar.SharpMimeTools
 		/// RFC 2822 Section 3.2.3
 		/// </summary>
 		// FIXME: add obs-FWS
-		public const string FWS = @"(([" + WSP + @"]{0,}\r\n){0,1}[" + WSP + @"]+)";
+		public const string FWS = @"(?:(?:[" + WSP + @"]{0,}\r\n){0,1}[" + WSP + @"]+)";
 		/// <summary>
 		/// RFC 2822 Section 3.2.3
 		/// </summary>
@@ -83,7 +83,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.4
 		/// </summary>
-		public const string dot_atom_text = @"[" + atext + @"]{1,}(\.[" + atext + @"]{1,}){0,}";
+		public const string dot_atom_text = @"[" + atext + @"]{1,}(?:\.[" + atext + @"]{1,}){0,}";
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>
@@ -95,34 +95,63 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>
-		public const string qcontent = @"([" + qtext + @"|" + quoted_pair + @")";
+		public const string qcontent =  @"(?:[" + qtext + @"]|(?:" + quoted_pair + @"))";
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>
-		public const string quoted_string = CFWS + @"{0,1}" + DQUOTE + @"(" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";
+		public const string quoted_string = CFWS + @"{0,1}" + DQUOTE + @"(?:" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";//CFWS + @"{0,1}" + DQUOTE + @"(?:" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";
 		/// <summary>
 		/// RFC 2822 Section 3.2.6
 		/// </summary>
-		public const string word = @"(" + atom + @"|" + quoted_string + @")";
+		public const string word = @"(?:" + atom + @"|(?:" + quoted_string + @"))";
+		/// <summary>
+		/// RFC 2822 Section 3.2.6
+		/// </summary>
+		// FIXME: add obs-phrase
+		public const string phrase = @"(?:" + word +  @"){1,}";
+		/// <summary>
+		/// RFC 2822 Section 3.2.6
+		/// </summary>
+		public const string address = @"(?:" + mailbox + @"|" + group + @")";
+		/// <summary>
+		/// RFC 2822 Section 3.2.6
+		/// </summary>
+		public const string mailbox = @"(?:" + name_addr + @"|" + addr_spec + @")";
+		/// <summary>
+		/// RFC 2822 Section 3.2.6
+		/// </summary>
+		public const string name_addr = @"(?:" + phrase + @"){0,}" + angle_addr;
 		/// <summary>
 		/// RFC 2822 Section 3.4
 		/// </summary>
 		// FIXME: add obs-angle-addr
-		public const string angle_addr = @"\x3C" + addr_spec + @"\x3E";
+		public const string angle_addr = CFWS + @"{0,1}" + @"\x3C" + addr_spec + @"\x3E" + CFWS + @"{0,1}";
+		/// <summary>
+		/// RFC 2822 Section 3.4
+		/// </summary>
+		public const string group = phrase + @":(?:" + mailbox_list + @"|" + CFWS + @"{0,1}){0,};" + CFWS + @"{0,1}";
+		/// <summary>
+		/// RFC 2822 Section 3.4
+		/// </summary>
+		public const string mailbox_list = @"(?:" + mailbox + @"(?:," + mailbox + @"){0,})";
+		/// <summary>
+		/// RFC 2822 Section 3.4
+		/// </summary>
+		public const string address_list = @"(?:" + address + @"(?:," + address + @"){0,})";
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>
 		// FIXME: add obs-local-part
-		public const string local_part = @"(" + dot_atom + @"|" + quoted_string + @")";
+		public const string local_part = @"(?:" + dot_atom + @"|" + quoted_string + @")";
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>
 		// FIXME: add obs-domain
-		public const string domain = @"(" + dot_atom + @"|" + domain_literal + @")";
+		public const string domain = @"(?:" + dot_atom + @"|" + domain_literal + @")";
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>
-		public const string domain_literal = CFWS + @"{0,1}" + @"\[(" + FWS + @"{0,1}" + dcontent + @"){0,}" + FWS + @"{0,1}" + @"\]" + CFWS + @"{0,1}";
+		public const string domain_literal = CFWS + @"{0,1}" + @"\[(?:" + FWS + @"{0,1}" + dcontent + @"){0,}" + FWS + @"{0,1}" + @"\]" + CFWS + @"{0,1}";
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>
@@ -130,7 +159,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>
-		public const string dcontent = @"([" + dtext + @"|" + quoted_pair + @")";
+		public const string dcontent = @"(?:[" + dtext + @"|" + quoted_pair + @")";
 		/// <summary>
 		/// RFC 2822 Section 3.4.1
 		/// </summary>

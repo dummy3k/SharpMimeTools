@@ -1,3 +1,9 @@
+07/10/2004
+ - Added more ABNF definitions for RFC 2822 and make all groups without
+   capture
+ - Bugfix: Address list parsing was a bit simplistic, now it is based on
+   a regex
+
 06/30/2004
  - Added Copyright notice to all source files
  - Added initial comments to public members
