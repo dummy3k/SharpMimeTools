@@ -1,3 +1,9 @@
+12/12/2004
+ - .NET 2.0 Regex parser did not like an ABNF entry.
+ - Added nant build targets for .NET 2.0 and Mono 2.0
+ - Build the documentation for Mono now that it works.
+ - Build different documentation for each framework version.
+
 11/08/2004
  - Added nant build file.
 

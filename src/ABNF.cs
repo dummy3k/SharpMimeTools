@@ -91,7 +91,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>
-		public const string qtext = NO_WS_CTL + @"\x21\x23-\x5B\x5D-\x7E";
+		public const string qtext = NO_WS_CTL + @"\x21\x23-\x5A\x5B\x5D-\x7E";
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>

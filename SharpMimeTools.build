@@ -47,8 +47,9 @@
 		<call target="set-framework-config" />
 	</target>
 	<target name="set-folders">
-		<property name="build.dir" value="${nant.project.basedir}/bin/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/${build.config}" />
-		<property name="build.ref" value="${nant.project.basedir}/bin/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}" />
+		<property name="build.dir.framework" value="${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}" />
+		<property name="build.dir" value="${nant.project.basedir}/bin/${build.dir.framework}/${build.config}" />
+		<property name="build.ref" value="${nant.project.basedir}/bin/${build.dir.framework}" />
 	</target>
 
 	<target name="build-doc">
@@ -60,7 +61,7 @@
 				</assemblies>
 				<documenters>
 					<documenter name="MSDN">
-						<property name="OutputDirectory" value="${nant.project.basedir}/doc/sdk/" />
+						<property name="OutputDirectory" value="${nant.project.basedir}/doc/sdk/${build.dir.framework}" />
 						<property name="HtmlHelpName" value="sharpmimetools" />
 						<property name="IncludeFavorites" value="True" />
 						<property name="Title" value="SharpMimeTools Documented Class Library" />
@@ -102,7 +103,7 @@
 					</documenter>
 				</documenters>
 			</ndoc>
-			<delete dir="${nant.project.basedir}/doc/sdk/ndoc_msdn_temp" />
+			<delete dir="${nant.project.basedir}/doc/sdk/${build.dir.framework}/ndoc_msdn_temp" />
 			<move file="${build.dir}/${project.name}.xml" todir="${build.dir}/../" />
 		</if>
 	</target>
@@ -120,12 +121,15 @@
 	</target>
 	<!-- Set default .NET 1.1 config values  -->
 	<target name="set-net-1.1-config" depends="set-net-config" />
+	<!-- Set default .NET 2.0 config values  -->
+	<target name="set-net-2.0-config" depends="set-net-config" />
 	<!-- Set default Mono config values  -->
 	<target name="set-mono-config">
 		<property name="build.defines" value="${build.defines},MONO" />
-		<property name="build.doc" value="false" />
+		<property name="build.doc" value="true" />
 	</target>
 	<!-- Set default Mono 1.0 config values  -->
 	<target name="set-mono-1.0-config" depends="set-mono-config" />
-	
+	<!-- Set default Mono 2.0 config values  -->
+	<target name="set-mono-2.0-config" depends="set-mono-config" />
 </project>
