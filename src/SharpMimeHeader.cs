@@ -31,6 +31,7 @@ namespace anmar.SharpMimeTools
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private anmar.SharpMimeTools.SharpMimeMessageStream message;
 		private System.Collections.Specialized.HybridDictionary headers;
+		private System.String _cached_headers = null;
 		private long startpoint;
 		private long endpoint;
 		private long startbody;
@@ -96,7 +97,12 @@ namespace anmar.SharpMimeTools
 		/// <param name="message"><see cref="System.IO.Stream"/> to read headers from</param>
 		public SharpMimeHeader( System.IO.Stream message ) : this( new anmar.SharpMimeTools.SharpMimeMessageStream (message), 0 ) {
 		}
-
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="message"></param>
+		public SharpMimeHeader( System.Byte[] message ) : this( new anmar.SharpMimeTools.SharpMimeMessageStream (message), 0 ) {
+		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMimeHeader"/> class from a <see cref="System.IO.Stream"/> starting from the specified point
 		/// </summary>
@@ -113,6 +119,14 @@ namespace anmar.SharpMimeTools
 			get {
 				return this.getProperty( name.ToString() );
 			}
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public void Close(){
+			this._cached_headers = this.message.ReadLines( this.startpoint, this.endpoint );
+			this.message.Close();
 		}
 		/// <summary>
 		/// Returns an enumerator that can iterate through the header fields
@@ -314,7 +328,10 @@ namespace anmar.SharpMimeTools
 		/// <value>From header body</value>
 		public System.String RawHeaders {
 			get {
-				return this.message.ReadLines( this.startpoint, this.endpoint );
+				if ( this._cached_headers!=null )
+					return this._cached_headers;
+				else
+					return this.message.ReadLines( this.startpoint, this.endpoint );
 			}
 		}
 		/// <summary>

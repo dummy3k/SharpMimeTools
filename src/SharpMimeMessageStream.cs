@@ -39,6 +39,14 @@ namespace anmar.SharpMimeTools
 			this.enc = new System.Text.ASCIIEncoding();
 			sr = new System.IO.StreamReader ( this.stream, this.enc );
 		}
+		public SharpMimeMessageStream ( System.Byte[] buffer ) {
+			this.stream = new System.IO.MemoryStream(buffer);
+			this.enc = new System.Text.ASCIIEncoding();
+			sr = new System.IO.StreamReader ( this.stream, this.enc );
+		}
+		public void Close(){
+			this.sr.Close();
+		}
 		public System.String ReadAll ( ) {
 			return this.ReadLines ( this.Position, this.stream.Length );
 		}
