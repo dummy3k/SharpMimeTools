@@ -4,28 +4,30 @@
 	<property name="project.name" value="SharpMimeTools" />
 	<property name="build.defines" value="" />
 	<property name="build.debug" value="false" />
+	<property name="build.basedir" value="${nant.project.basedir}" />
 	<property name="build.dir" value="" />
-	<property name="build.ref" value="" />
-	<property name="build.doc" value="false" />
+	<property name="build.ref.platform" value="" />
+	<property name="build.ref.platform.version" value="" />
+	<property name="build.doc" value="true" />
 	<fileset id="source">
-		<include name="${nant.project.basedir}/src/*.cs" />
+		<include name="${build.basedir}/src/*.cs" />
 	</fileset>
 	<fileset id="general">
-		<include name="${nant.project.basedir}/SharpMimeTools.cmbx" />
-		<include name="${nant.project.basedir}/SharpMimeTools.prjx" />
+		<include name="${build.basedir}/SharpMimeTools.cmbx" />
+		<include name="${build.basedir}/SharpMimeTools.prjx" />
 	</fileset>
 	<fileset id="docs">
-		<include name="${nant.project.basedir}/changelog.txt" />
-		<include name="${nant.project.basedir}/license.txt" />
-		<include name="${nant.project.basedir}/doc/readme.txt" />
-		<include name="${nant.project.basedir}/doc/TODO.txt" />
+		<include name="${build.basedir}/changelog.txt" />
+		<include name="${build.basedir}/license.txt" />
+		<include name="${build.basedir}/doc/readme.txt" />
+		<include name="${build.basedir}/doc/TODO.txt" />
 	</fileset>
 	<target name="build" depends="build-pre">
 		<mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}" />
 		<csc target="library" define="${build.defines}" warnaserror="false" debug="${build.debug}" output="${build.dir}/${project.name}.dll" doc="${build.dir}/../${project.name}.xml">
 			<sources failonempty="true" refid="source" />
 			<references>
-				<include name="${build.ref}/log4net.dll" />
+				<include name="${build.ref.platform}/log4net.dll" />
 			</references>
 		</csc>
 	</target>
@@ -38,7 +40,7 @@
 	<target name="release" description="Release build">
 		<property name="build.debug" value="false" />
 		<property name="build.config" value="release" />
-		<property name="build.defines" value="" />
+		<property name="build.defines" value="RELEASE" />
 		<call target="build" />
 		<call target="build-doc" />
 	</target>
@@ -48,8 +50,9 @@
 	</target>
 	<target name="set-folders">
 		<property name="build.dir.framework" value="${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}" />
-		<property name="build.dir" value="${nant.project.basedir}/bin/${build.dir.framework}/${build.config}" />
-		<property name="build.ref" value="${nant.project.basedir}/bin/${build.dir.framework}" />
+		<property name="build.ref.platform" value="${build.basedir}/bin/${framework::get-family(framework::get-target-framework())}" />
+		<property name="build.ref.platform.version" value="${build.ref.platform}/${framework::get-version(framework::get-target-framework())}" />
+		<property name="build.dir" value="${build.ref.platform.version}/${build.config}" />
 	</target>
 
 	<target name="build-doc">
@@ -61,7 +64,7 @@
 				</assemblies>
 				<documenters>
 					<documenter name="MSDN">
-						<property name="OutputDirectory" value="${nant.project.basedir}/doc/sdk/${build.dir.framework}" />
+						<property name="OutputDirectory" value="${build.basedir}/doc/sdk/${build.dir.framework}" />
 						<property name="HtmlHelpName" value="sharpmimetools" />
 						<property name="IncludeFavorites" value="True" />
 						<property name="Title" value="SharpMimeTools Documented Class Library" />
@@ -87,7 +90,7 @@
 						<property name="DocumentProtectedInternalAsProtected" value="False" />
 						<property name="DocumentEmptyNamespaces" value="False" />
 						<property name="IncludeAssemblyVersion" value="True" />
-						<property name="CopyrightText" value="Copyright (C) 2003-2004 Angel Marin. All Rights Reserved." />
+						<property name="CopyrightText" value="Copyright (C) 2003-2005 Angel Marin. All Rights Reserved." />
 						<property name="CopyrightHref" value="http://anmar.eu.org/projects/sharpwebmail/" />
 						<property name="ReferencesPath" value="" />
 						<property name="SkipNamespacesWithoutSummaries" value="False" />
@@ -103,7 +106,7 @@
 					</documenter>
 				</documenters>
 			</ndoc>
-			<delete dir="${nant.project.basedir}/doc/sdk/${build.dir.framework}/ndoc_msdn_temp" />
+			<delete dir="${build.basedir}/doc/sdk/${build.dir.framework}/ndoc_msdn_temp" />
 			<move file="${build.dir}/${project.name}.xml" todir="${build.dir}/../" />
 		</if>
 	</target>
@@ -116,20 +119,25 @@
         <call target="set-${framework::get-target-framework()}-config" />
 	</target>
 	<!-- Set default .NET config values -->
-	<target name="set-net-config">
-		<property name="build.doc" value="true" />
-	</target>
+	<target name="set-net-config" />
 	<!-- Set default .NET 1.1 config values  -->
-	<target name="set-net-1.1-config" depends="set-net-config" />
+	<target name="set-net-1.1-config" depends="set-net-config">
+		<property name="build.defines" value="${build.defines},NET_1_1,API_1_1" />
+	</target>
 	<!-- Set default .NET 2.0 config values  -->
-	<target name="set-net-2.0-config" depends="set-net-config" />
+	<target name="set-net-2.0-config" depends="set-net-config">
+		<property name="build.defines" value="${build.defines},NET_2_0,API_2_0" />
+	</target>
 	<!-- Set default Mono config values  -->
 	<target name="set-mono-config">
 		<property name="build.defines" value="${build.defines},MONO" />
-		<property name="build.doc" value="true" />
 	</target>
 	<!-- Set default Mono 1.0 config values  -->
-	<target name="set-mono-1.0-config" depends="set-mono-config" />
+	<target name="set-mono-1.0-config" depends="set-mono-config">
+		<property name="build.defines" value="${build.defines},MONO,MONO_1_0,API_1_1" />
+	</target>
 	<!-- Set default Mono 2.0 config values  -->
-	<target name="set-mono-2.0-config" depends="set-mono-config" />
+	<target name="set-mono-2.0-config" depends="set-mono-config">
+		<property name="build.defines" value="${build.defines},MONO,MONO_2_0,API_2_0" />
+	</target>
 </project>

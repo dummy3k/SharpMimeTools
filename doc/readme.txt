@@ -13,7 +13,7 @@ Building
 --------------------------------
 
 Dependencies:
- - Microsoft .NET framework 1.1  - http://msdn.microsoft.com/netframework/
+ - Microsoft .NET framework 1.1 or later  - http://msdn.microsoft.com/netframework/
    or Mono - http://www.mono-project.com/
  - Log4net - http://logging.apache.org/log4net/
 
@@ -24,7 +24,6 @@ Authors
 --------------------------------
  - Angel Marin <anmar at gmx.net> - http://anmar.eu.org/
 
-
 Licence
 --------------------------------
  - SharpMimeTools code is under LGPL v2.1 or later, read license.txt
@@ -33,4 +32,4 @@ History
 --------------------------------
 
 --------------------------------
-Angel Marin 2003 - 2004 - http://anmar.eu.org/
+Angel Marin 2003-2005 - http://anmar.eu.org/
