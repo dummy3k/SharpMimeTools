@@ -116,7 +116,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.6
 		/// </summary>
-		public const string mailbox = @"(?:" + name_addr + @"|" + addr_spec + @")";
+		public const string mailbox = @"(?:" + addr_spec + @"|" + name_addr + @")";
 		/// <summary>
 		/// RFC 2822 Section 3.2.6
 		/// </summary>
