@@ -1,0 +1,84 @@
+05/01/2004
+ - Now ussing SharpDevelop
+
+04/27/2004
+ - Added ReturnPath property
+ - Merged SharpMimeDecoders and SharpMimeParsers into SharpMimeTools
+
+04/26/2004
+ - Added doc folder, todo.txt and readme.txt to project
+ - Project branded as SharpMimeTools
+ - Namespace branded as anmar.SharpMimeTools
+
+04/25/2004
+ - Name property tries to discard any folder information. If disallowed
+   characters are found, Name returns null
+
+04/23/2004
+ - Comments removed by default from Header object properties. Raw text is
+   accessible from the indexer
+
+04/18/2004 
+ - Implemented Content-Transfer-Encoding quoted-printable on attachments
+ - Name property takes into account Content-Location value
+
+04/17/2004
+ - Added some log4net statements
+ - Code cleanups of debug info
+ - Implemented enumerable Address parser that can be bound to controls
+
+04/14/2004
+ - Implemented Content-Transfer-Encoding 7bit, 8bit and binary
+ - Some cleanups of old code
+ - Renamed some Properties
+ - Redefined the accessibility level of some classes, methods, etc.
+ - Use System.String.Empty instead of ""
+
+04/13/2004
+ - Minor fixes
+
+04/12/2004
+ - Always apply RFC 2047 decoding when parsing header fields
+
+04/10/2004
+ - Fixed a bug in the quoted-printable decoder
+ - Size property of message part implemented
+ 
+04/09/2004
+ - Fixed a bug in the quoted-printable decoder
+ - Fixed a bug in the From field parser
+ - Fixed a bug in the Name property
+
+04/08/2004
+ - Generic header field body parsing
+ - Content-Disposition and Content-Location parsed when the headers are parsed
+ - Name property of message part implemented
+ - Parts property of message part implemented
+ - It is possible to write a body into a stream
+
+04/06/2004
+  - Minor fixes
+ 
+04/05/2004
+ - Minor fixes
+
+04/04/2004
+- Fixed a bug in the rfc2047 decoder
+- Added Assembly info
+
+04/03/2004
+ - Buffered reading improves performance in 50% when decoding
+   messages linearly
+
+03/31/2004
+ - The parser is now recursive
+ - Now the date parser is also compatible with RFC 822
+
+03/30/2004
+ - Some improvements to the parser
+
+03/29/2004
+ - Project forked from the existing codebase in CTNWebMail.NET
+ - Reorganization of the files
+ - Mayor rewrite of the code. It now looks much better :)
+ - Added license.txt
