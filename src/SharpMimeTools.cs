@@ -97,6 +97,7 @@ namespace anmar.SharpMimeTools
 				int rpos = date.LastIndexOfAny(new Char[]{' ', '\t'});
 				if (rpos != date.Length - 6)
 					date = date.Substring(0, rpos + 1) + "-0000";
+				date = date.Insert(date.Length-2, ":");
 				msgDateTime = DateTime.ParseExact(date, 
 					new string[] {	@"dddd, d MMM yyyy H:m:s zzz", @"ddd, d MMM yyyy H:m:s zzz", @"d MMM yyyy H:m:s zzz",
 									 @"dddd, d MMM yy H:m:s zzz", @"ddd, d MMM yy H:m:s zzz", @"d MMM yy H:m:s zzz",
@@ -104,8 +105,10 @@ namespace anmar.SharpMimeTools
 									 @"dddd, d MMM yy H:m zzz", @"ddd, d MMM yy H:m zzz", @"d MMM yy H:m zzz"},
 					System.Globalization.CultureInfo.CreateSpecificCulture("en-us"),
 					System.Globalization.DateTimeStyles.AllowInnerWhite);
-			} catch ( System.Exception ) {
+			} catch ( System.Exception e ) {
 				msgDateTime = new System.DateTime (0);
+				if ( log.IsErrorEnabled )
+					log.Error("Error parsing date: " + date, e);
 			}
 			return msgDateTime;
 		}

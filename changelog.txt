@@ -1,3 +1,7 @@
+08/14/2004
+ - Fixed a difference in the way mono handles timezones in the date parser.
+   It is caused by MS not following there own spec.
+
 08/04/2004
  - Fixed the quoted-printable decoder definition
  - Bugfix: double dot at the beginning of lines where not being handled.
