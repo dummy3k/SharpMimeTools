@@ -81,7 +81,7 @@ namespace anmar.SharpMimeTools {
 		public bool SeekLine ( long line ) {
 			long linenumber = 0;
 			this.SeekOrigin();
-			for ( ; linenumber<(line-1) && this.ReadLine()!=null; linenumber++ );
+			for ( ; linenumber<(line-1) && this.ReadLine()!=null; linenumber++ ){}
 			return (linenumber==(line-1))?true:false;
 		}
 		public void SeekOrigin () {
@@ -89,6 +89,7 @@ namespace anmar.SharpMimeTools {
 		}
 		public void SeekPoint ( long point ) {
 			if ( this.sr.BaseStream.CanSeek && this.sr.BaseStream.Seek (point, System.IO.SeekOrigin.Begin) != point ) {
+				if ( log.IsErrorEnabled) log.Error ("Error while seeking");
 				throw new System.IO.IOException ();
 			} else {
 				this.sr.DiscardBufferedData();

@@ -3,7 +3,6 @@ using System;
 namespace anmar.SharpMimeTools {
 
 	internal class SharpMimeMessageCollection : System.Collections.IEnumerable {
-		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		protected anmar.SharpMimeTools.SharpMimeMessage parent;
 		protected System.Collections.ArrayList messages = new System.Collections.ArrayList();
 	

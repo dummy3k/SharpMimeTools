@@ -3,8 +3,6 @@ using System;
 namespace anmar.SharpMimeTools
 {
 	internal class SharpMimeAddressCollection : System.Collections.IEnumerable {
-		// Create a logger for use in this class
-		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		protected System.Collections.ArrayList list = new System.Collections.ArrayList();
 
 		public SharpMimeAddressCollection ( System.String text ) {

@@ -56,9 +56,10 @@ namespace anmar.SharpMimeTools {
 			if ( this.startpoint==0 ) {
 				System.String line = this.message.ReadLine();
 				// Perhaps there is part of the POP3 response
-				if ( line!=null && line.StartsWith ("+OK") )
+				if ( line!=null && line.StartsWith ("+OK") ) {
+					if ( log.IsDebugEnabled ) log.Debug ("+OK present at top of the message");
 					this.startpoint = this.message.Position;
-				else this.message.ReadLine_Undo();
+				} else this.message.ReadLine_Undo();
 			}
 			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
 			this.parse();
