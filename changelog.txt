@@ -1,3 +1,6 @@
+12/18/2004
+ - Bugfix: ABNF definition of atom was missing the CFWS part.
+
 12/12/2004
  - .NET 2.0 Regex parser did not like an ABNF entry.
  - Added nant build targets for .NET 2.0 and Mono 2.0

@@ -75,7 +75,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.4
 		/// </summary>
-		public const string atom = @"[" + atext + @"]+";
+		public const string atom = CFWS + @"{0,1}[" + atext + @"]+" + CFWS + @"{0,1}";
 		/// <summary>
 		/// RFC 2822 Section 3.2.4
 		/// </summary>
@@ -99,7 +99,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2822 Section 3.2.5
 		/// </summary>
-		public const string quoted_string = CFWS + @"{0,1}" + DQUOTE + @"(?:" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";//CFWS + @"{0,1}" + DQUOTE + @"(?:" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";
+		public const string quoted_string = CFWS + @"{0,1}" + DQUOTE + @"(?:" + FWS + @"{0,1}" + qcontent + "){0,}" + FWS + @"{0,1}" + DQUOTE + CFWS + @"{0,1}";
 		/// <summary>
 		/// RFC 2822 Section 3.2.6
 		/// </summary>
