@@ -33,7 +33,7 @@ namespace anmar.SharpMimeTools {
 			bool error = false;
 			if ( stream.CanWrite ) {
 				System.Byte[] buffer = null;
-				switch (this.Header["Content-Transfer-Encoding"]) {
+				switch (this.Header.ContentTransferEncoding) {
 					case "quoted-printable":
 						buffer = this.mi.header.Encoding.GetBytes(this.BodyDecoded);
 						break;
@@ -190,7 +190,7 @@ namespace anmar.SharpMimeTools {
 		}
 		public System.String BodyDecoded {
 			get {
-				switch (this.Header["Content-Transfer-Encoding"]) {
+				switch (this.Header.ContentTransferEncoding) {
 					case "quoted-printable":
 						System.String body = this.Body;
 						anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, ref body );

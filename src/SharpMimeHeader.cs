@@ -161,6 +161,15 @@ namespace anmar.SharpMimeTools {
 				return this.mt.contentlocation;
 			}
 		}
+		public System.String ContentTransferEncoding {
+			get {
+				System.String tmp = this.getProperty("Content-Transfer-Encoding");
+				if ( tmp!=null ) {
+					tmp = tmp.ToLower();
+				}
+				return tmp;
+			}
+		}
 		public System.String ContentType {
 			get {
 				System.String tmp = this.getProperty("Content-Type");
