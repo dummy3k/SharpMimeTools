@@ -165,10 +165,9 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <param name="enc"><see cref="System.Text.Encoding" /> to use</param>
 		/// <param name="orig"><c>string</c> to decode</param>
-		/// <returns>the decoded <see cref="System.String" /></returns>
-		public static System.String QuotedPrintable2Unicode ( System.Text.Encoding enc, ref System.String orig ) {
+		public static void QuotedPrintable2Unicode ( System.Text.Encoding enc, ref System.String orig ) {
 			if ( enc==null || orig==null )
-				return orig;
+				return;
 
 			int i = 0;
 			System.String hexNumber;
@@ -189,7 +188,7 @@ namespace anmar.SharpMimeTools
 				}
 				i++;
 			}
-			return orig;
+			return;
 		}
 		/// <summary>
 		/// rfc 2047 header body decoding

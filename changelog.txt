@@ -1,3 +1,8 @@
+08/04/2004
+ - Fixed the quoted-printable decoder definition
+ - Bugfix: double dot at the beginning of lines where not being handled.
+   Not sure how this code disappeared.
+
 07/10/2004
  - Added more ABNF definitions for RFC 2822 and make all groups without
    capture

@@ -51,6 +51,8 @@ namespace anmar.SharpMimeTools
 			line = sr.ReadLine();
 			if ( line!=null ) {
 				this.finalpos=this.Position+this.enc.GetByteCount(line.ToCharArray())+this.enc.GetByteCount(new System.Char[]{'\r','\n'});
+				if ( line.StartsWith(".." ) )
+					line=line.Remove(0,1);
 			} else {
 				this.finalpos=this.stream.Length;
 			}
