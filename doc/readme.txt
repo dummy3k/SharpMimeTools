@@ -14,7 +14,7 @@ Building
 
 Dependencies:
  - Microsoft .NET framework 1.1  - http://msdn.microsoft.com/netframework/
- - Log4net - http://log4net.sourceforge.net/
+ - Log4net - http://logging.apache.org/log4net/
 
 Project files provided for:
  - SharpDevelop - http://www.icsharpcode.net/
