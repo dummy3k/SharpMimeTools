@@ -14,6 +14,7 @@ Building
 
 Dependencies:
  - Microsoft .NET framework 1.1  - http://msdn.microsoft.com/netframework/
+   or Mono - http://www.mono-project.com/
  - Log4net - http://logging.apache.org/log4net/
 
 Project files provided for:
