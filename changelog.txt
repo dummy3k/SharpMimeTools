@@ -1,3 +1,24 @@
+05/11/2004
+ - Minor cleanups
+ - Skip the status response from servers if it is there
+ - Bugfix: An extra CRLF was being added when reading bodies at the
+   begining
+
+05/10/2004
+ - Added ReleaseMono and DebugMono configs to project
+ - Cleanup some unused code
+ 
+05/09/2004
+ - Name Property removes Invalid Chars
+ - Autogenerate attachment filename when there is no valid one
+ - addr_spec ABNF definition added
+ - Better cleanup of temp files when decoding attachments
+
+05/04/2004
+ - It is possible to write a part into a folder if there
+   is a name present in headers
+ - Added docs (readme and todo) to project
+
 05/01/2004
  - Now ussing SharpDevelop
 

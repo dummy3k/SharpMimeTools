@@ -28,7 +28,6 @@ namespace anmar.SharpMimeTools {
 			line = sr.ReadLine();
 			if ( line!=null ) {
 				this.finalpos=this.Position+this.enc.GetByteCount(line.ToCharArray())+this.enc.GetByteCount(new System.Char[]{'\r','\n'});
-//				Console.WriteLine("Linea de {0} a {1}: {2}", this.initpos, this.finalpos, line);
 			} else {
 				this.finalpos=this.stream.Length;
 			}
@@ -46,7 +45,8 @@ namespace anmar.SharpMimeTools {
 				line = this.ReadLine();
 				if ( line!=null ) {
 					// TODO: try catch
-					lines.Append ( ABNF.CRLF );
+					if ( lines.Length>0 )
+						lines.Append ( ABNF.CRLF );
 					lines.Append ( line );
 				}
 			} while ( line!=null && this.Position!=-1 && this.Position<end );
@@ -93,7 +93,6 @@ namespace anmar.SharpMimeTools {
 			} else {
 				this.sr.DiscardBufferedData();
 				this.finalpos = point;
-//				Console.WriteLine ("Volver a {0}, y estoy en {1}", point, this.stream.Position);
 			}
 		}
 		public System.Text.Encoding Enconding {

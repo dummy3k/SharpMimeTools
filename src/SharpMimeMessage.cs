@@ -62,6 +62,66 @@ namespace anmar.SharpMimeTools {
 			}
 			return !error;
 		}
+		public System.IO.FileInfo DumpBody ( System.String path ) {
+			return this.DumpBody ( path, this.Name );
+		}
+		public System.IO.FileInfo DumpBody ( System.String path, bool generatename ) {
+			System.String name = this.Name;
+			if ( name==null && generatename )
+				name = System.String.Format ( "generated_{0}.{1}", this.GetHashCode(), this.Header.SubType );
+			return this.DumpBody ( path, name );
+		}
+		public System.IO.FileInfo DumpBody ( System.String path, System.String name ) {
+			System.IO.FileInfo file = null;
+			if ( name!=null ) {
+				if ( log.IsDebugEnabled )
+					log.Debug ("Found attachment: " + name);
+				name = System.IO.Path.GetFileName(name);
+				// Dump file contents
+				try {
+					System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo ( path );
+					dir.Create();
+					file = new System.IO.FileInfo (System.IO.Path.Combine (path, name) );
+					if ( dir.Exists
+						 && dir.FullName.Equals (new System.IO.DirectoryInfo (file.Directory.FullName).FullName) ) {
+						if ( !file.Exists ) {
+							if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
+								file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
+							if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
+								file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
+							if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
+								file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
+							System.IO.Stream stream = file.Create();
+							bool error = !this.DumpBody (stream);
+							stream.Close();
+							if ( error ) {
+								if ( log.IsErrorEnabled )
+									log.Error ("Error writtin to disk: " + name);
+								file.Delete();
+							} else {
+								if ( log.IsDebugEnabled )
+									log.Debug ("Attachment saved: " + name);
+								// The file should be there
+								file.Refresh();
+							}
+						}
+					}
+					dir = null;
+				} catch ( System.Exception e ) {
+					if ( log.IsErrorEnabled )
+						log.Error ("Error writting to disk: " + name, e);
+					try {
+						if ( file!=null ) {
+							file.Refresh();
+							if ( file.Exists )
+								file.Delete ();
+						}
+					} catch ( System.Exception ) {}
+					file = null;
+				}
+			}
+			return file;
+		}
 		public System.Collections.IEnumerator GetEnumerator() {
 			this.parse();
 			return this.mi.parts.GetEnumerator();
@@ -200,8 +260,11 @@ namespace anmar.SharpMimeTools {
 					try {
 						param = System.IO.Path.GetFileName(param);
 					} catch ( System.ArgumentException ) {
-						// Invalid chars
-						param = null;
+						// Remove invalid chars
+						foreach ( char ichar in System.IO.Path.InvalidPathChars ) {
+							param = param.Replace ( ichar.ToString(), System.String.Empty );
+						}
+						param = System.IO.Path.GetFileName(param);
 					}
 				}
 				return param;

@@ -49,30 +49,22 @@ namespace anmar.SharpMimeTools {
 		}
 		protected HeaderInfo mt;
 
-		internal SharpMimeHeader(anmar.SharpMimeTools.SharpMimeMessageStream message) {
-			this.startpoint = 0;
-			this.message = message;
-			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
-			this.parse();
-		}
+		internal SharpMimeHeader( anmar.SharpMimeTools.SharpMimeMessageStream message ) : this ( message, 0 ){}
 		internal SharpMimeHeader(anmar.SharpMimeTools.SharpMimeMessageStream message, long startpoint) {
 			this.startpoint = startpoint;
 			this.message = message;
+			if ( this.startpoint==0 ) {
+				System.String line = this.message.ReadLine();
+				// Perhaps there is part of the POP3 response
+				if ( line!=null && line.StartsWith ("+OK") )
+					this.startpoint = this.message.Position;
+				else this.message.ReadLine_Undo();
+			}
 			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
 			this.parse();
 		}
-		public SharpMimeHeader( System.IO.Stream message ) {
-			this.startpoint = 0;
-			this.message = new anmar.SharpMimeTools.SharpMimeMessageStream (message);
-			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
-			this.parse();
-		}
-		public SharpMimeHeader( System.IO.Stream message, long startpoint ) {
-			this.startpoint = startpoint;
-			this.message = new anmar.SharpMimeTools.SharpMimeMessageStream (message);
-			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
-			this.parse();
-		}
+		public SharpMimeHeader( System.IO.Stream message ) : this( new anmar.SharpMimeTools.SharpMimeMessageStream (message), 0 ){}
+		public SharpMimeHeader( System.IO.Stream message, long startpoint ) : this( new anmar.SharpMimeTools.SharpMimeMessageStream (message), startpoint ){}
 		public System.String this[ System.Object name ] {
 			get {
 				return this.getProperty( name.ToString() );
