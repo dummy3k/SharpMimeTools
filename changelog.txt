@@ -1,3 +1,6 @@
+11/08/2004
+ - Added nant build file.
+
 10/15/2004
  - Bugfix: Actual ABNF definition of mailbox (RFC 2822 Section 3.2.6) was too
    hard for .NET regex engine. Thanks Chris Slatt for taking this to my attention

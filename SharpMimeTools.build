@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!-- SharpMimeTools build file -->
+<project name="anmar.SharpMimeTools" default="debug">
+	<property name="project.name" value="SharpMimeTools" />
+	<property name="build.defines" value="" />
+	<property name="build.debug" value="false" />
+	<property name="build.dir" value="" />
+	<property name="build.ref" value="" />
+	<property name="build.doc" value="false" />
+	<fileset id="source">
+		<include name="${nant.project.basedir}/src/*.cs" />
+	</fileset>
+	<fileset id="general">
+		<include name="${nant.project.basedir}/SharpMimeTools.cmbx" />
+		<include name="${nant.project.basedir}/SharpMimeTools.prjx" />
+	</fileset>
+	<fileset id="docs">
+		<include name="${nant.project.basedir}/changelog.txt" />
+		<include name="${nant.project.basedir}/license.txt" />
+		<include name="${nant.project.basedir}/doc/readme.txt" />
+		<include name="${nant.project.basedir}/doc/TODO.txt" />
+	</fileset>
+	<target name="build" depends="build-pre">
+		<mkdir dir="${build.dir}" unless="${directory::exists(build.dir)}" />
+		<csc target="library" define="${build.defines}" warnaserror="false" debug="${build.debug}" output="${build.dir}/${project.name}.dll" doc="${build.dir}/../${project.name}.xml">
+			<sources failonempty="true" refid="source" />
+			<references>
+				<include name="${build.ref}/log4net.dll" />
+			</references>
+		</csc>
+	</target>
+	<target name="debug" description="Debug build">
+		<property name="build.debug" value="true" />
+		<property name="build.config" value="debug" />
+		<property name="build.defines" value="DEBUG" />
+		<call target="build" />
+	</target>
+	<target name="release" description="Release build">
+		<property name="build.debug" value="false" />
+		<property name="build.config" value="release" />
+		<property name="build.defines" value="" />
+		<call target="build" />
+		<call target="build-doc" />
+	</target>
+	<target name="build-pre">
+		<call target="set-folders" />
+		<call target="set-framework-config" />
+	</target>
+	<target name="set-folders">
+		<property name="build.dir" value="${nant.project.basedir}/bin/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}/${build.config}" />
+		<property name="build.ref" value="${nant.project.basedir}/bin/${framework::get-family(framework::get-target-framework())}/${framework::get-version(framework::get-target-framework())}" />
+	</target>
+
+	<target name="build-doc">
+		<if test="${build.doc}">
+			<move file="${build.dir}/../${project.name}.xml" todir="${build.dir}" />
+			<ndoc>
+				<assemblies basedir="${build.dir}/">
+					<include name="${project.name}.dll" />
+				</assemblies>
+				<documenters>
+					<documenter name="MSDN">
+						<property name="OutputDirectory" value="${nant.project.basedir}/doc/sdk/" />
+						<property name="HtmlHelpName" value="sharpmimetools" />
+						<property name="IncludeFavorites" value="True" />
+						<property name="Title" value="SharpMimeTools Documented Class Library" />
+						<property name="SplitTOCs" value="False" />
+						<property name="DefaulTOC" value="" />
+						<property name="IncludeHierarchy" value="False" />
+						<property name="ShowVisualBasic" value="False" />
+						<property name="RootPageContainsNamespaces" value="False" />
+						<property name="SortTOCByNamespace" value="True" />
+						<property name="OutputTarget" value="HtmlHelp" />
+						<property name="HeaderHtml" value="" />
+						<property name="FooterHtml" value="" />
+						<property name="FilesToInclude" value="" />
+						<property name="LinkToSdkDocVersion" value="SDK_v1_1" />
+						<property name="ShowMissingSummaries" value="False" />
+						<property name="ShowMissingRemarks" value="False" />
+						<property name="ShowMissingParams" value="False" />
+						<property name="ShowMissingReturns" value="False" />
+						<property name="ShowMissingValues" value="False" />
+						<property name="DocumentInternals" value="False" />
+						<property name="DocumentProtected" value="True" />
+						<property name="DocumentPrivates" value="False" />
+						<property name="DocumentProtectedInternalAsProtected" value="False" />
+						<property name="DocumentEmptyNamespaces" value="False" />
+						<property name="IncludeAssemblyVersion" value="True" />
+						<property name="CopyrightText" value="Copyright (C) 2003-2004 Angel Marin. All Rights Reserved." />
+						<property name="CopyrightHref" value="http://anmar.eu.org/projects/sharpwebmail/" />
+						<property name="ReferencesPath" value="" />
+						<property name="SkipNamespacesWithoutSummaries" value="False" />
+						<property name="UseNamespaceDocSummaries" value="False" />
+						<property name="AutoPropertyBackerSummaries" value="False" />
+						<property name="AutoDocumentConstructors" value="True" />
+						<property name="DocumentAttributes" value="False" />
+						<property name="ShowTypeIdInAttributes" value="True" />
+						<property name="DocumentedAttributes" value="" />
+						<property name="GetExternalSummaries" value="True" />
+						<property name="EditorBrowsableFilter" value="Off" />
+						<property name="UseNDocXmlFile" value="" />
+					</documenter>
+				</documenters>
+			</ndoc>
+			<delete dir="${nant.project.basedir}/doc/sdk/ndoc_msdn_temp" />
+			<move file="${build.dir}/${project.name}.xml" todir="${build.dir}/../" />
+		</if>
+	</target>
+
+	<!-- Framework targets -->
+	<target name="set-framework-config">
+		<if test="${not(target::exists('set-'+framework::get-target-framework()+'-config'))}">
+            <fail message="The '${framework::get-target-framework()}' framework is not supported" />
+        </if>
+        <call target="set-${framework::get-target-framework()}-config" />
+	</target>
+	<!-- Set default .NET config values -->
+	<target name="set-net-config">
+		<property name="build.doc" value="true" />
+	</target>
+	<!-- Set default .NET 1.1 config values  -->
+	<target name="set-net-1.1-config" depends="set-net-config" />
+	<!-- Set default Mono config values  -->
+	<target name="set-mono-config">
+		<property name="build.defines" value="${build.defines},MONO" />
+		<property name="build.doc" value="false" />
+	</target>
+	<!-- Set default Mono 1.0 config values  -->
+	<target name="set-mono-1.0-config" depends="set-mono-config" />
+	
+</project>
