@@ -129,6 +129,16 @@ namespace anmar.SharpMimeTools
 			this.message.Close();
 		}
 		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		public bool Contains ( System.String name ) {
+			if ( this.headers==null )
+				this.parse();
+			return this.headers.Contains(name);
+		}
+		/// <summary>
 		/// Returns an enumerator that can iterate through the header fields
 		/// </summary>
 		/// <returns>A <see cref="System.Collections.IEnumerator" /> for the header fields</returns>
@@ -162,7 +172,7 @@ namespace anmar.SharpMimeTools
 					if ( headerline.Length == 2 ) {
 						headerline[1] = headerline[1].TrimStart(new Char[] {' '});
 						if ( this.headers.Contains ( headerline[0]) ) {
-							this.headers[headerline[0]] = this.headers[headerline[0]] + headerline[1];
+							this.headers[headerline[0]] = System.String.Concat(this.headers[headerline[0]], "\r\n", headerline[1]);
 						} else {
 							this.headers.Add (headerline[0].ToLower(), headerline[1]);
 						}

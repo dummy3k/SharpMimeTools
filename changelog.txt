@@ -1,3 +1,8 @@
+12/19/2004
+ - Added Contains method to header class.
+ - When a header with the same name is found more than once, concatenate the content
+   with CRLF separation.
+
 12/18/2004
  - Bugfix: ABNF definition of atom was missing the CFWS part.
 
