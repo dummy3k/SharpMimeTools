@@ -1,9 +1,39 @@
+// -----------------------------------------------------------------------
+//
+//   Copyright (C) 2003-2004 Angel Marin
+// 
+//   This file is part of SharpMimeTools
+//
+//   SharpMimeTools is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU Lesser General Public
+//   License as published by the Free Software Foundation; either
+//   version 2.1 of the License, or (at your option) any later version.
+//
+//   SharpMimeTools is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   Lesser General Public License for more details.
+//
+//   You should have received a copy of the GNU Lesser General Public
+//   License along with SharpMimeTools; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+// -----------------------------------------------------------------------
+
 using System;
 
 namespace anmar.SharpMimeTools
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public class SharpMimeTools {
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		/// <summary>
+		/// Parses a <see cref="System.Text.Encoding" /> from a charset name
+		/// </summary>
+		/// <param name="charset">charset to parse</param>
+		/// <returns>A <see cref="System.Text.Encoding" /> that represents the given <c>charset</c></returns>
 		public static System.Text.Encoding parseCharSet ( System.String charset ) {
 			try {
 				return System.Text.Encoding.GetEncoding (charset);
@@ -12,11 +42,19 @@ namespace anmar.SharpMimeTools
 			}
 		}
 		/// <summary>
-		/// 
+		/// Parse a rfc 2822 address specification. rfc 2822 section 3.4
 		/// </summary>
+		/// <param name="from">field body to parse</param>
+		/// <returns>A <see cref="System.Collections.IEnumerable" /> collection of <see cref="anmar.SharpMimeTools.SharpMimeAddress" /></returns>
 		public static System.Collections.IEnumerable parseFrom ( System.String from ) {
 			return anmar.SharpMimeTools.SharpMimeAddressCollection.Parse (from);
 		}
+		/// <summary>
+		/// Parse a rfc 2822 name-address specification. rfc 2822 section 3.4
+		/// </summary>
+		/// <param name="from">address</param>
+		/// <param name="part">1 is display-name; 2 is addr-spec</param>
+		/// <returns>the requested <see cref="System.String" /></returns>
 		public static System.String parseFrom ( System.String from, int part ) {
 			int pos;
 			if ( from==null || from.Length<1) {
@@ -36,8 +74,10 @@ namespace anmar.SharpMimeTools
 			return from;
 		}
 		/// <summary>
-		/// 
+		/// Parse a rfc 2822 date and time specification. rfc 2822 section 3.3
 		/// </summary>
+		/// <param name="date">rfc 2822 date-time</param>
+		/// <returns>A <see cref="System.DateTime" /> from the parsed header body</returns>
 		public static System.DateTime parseDate ( System.String date ) {
 			System.DateTime msgDateTime;
 			date = anmar.SharpMimeTools.SharpMimeTools.uncommentString (date);
@@ -70,8 +110,11 @@ namespace anmar.SharpMimeTools
 			return msgDateTime;
 		}
 		/// <summary>
-		/// 
+		/// Parse a rfc 2822 header field with parameters
 		/// </summary>
+		/// <param name="field">field name</param>
+		/// <param name="fieldbody">field body to parse</param>
+		/// <returns>A <see cref="System.Collections.Specialized.StringDictionary" /> from the parsed field body</returns>
 		public static System.Collections.Specialized.StringDictionary parseHeaderFieldBody ( System.String field, System.String fieldbody ) {
 			if ( fieldbody==null )
 				return null;
@@ -95,16 +138,21 @@ namespace anmar.SharpMimeTools
 			return fieldbodycol;
 		}
 		/// <summary>
-		/// 
+		/// Parse and decode rfc 2047 header body
 		/// </summary>
+		/// <param name="header">header body to parse</param>
+		/// <returns>parsed <see cref="System.String" /></returns>
 		public static System.String parserfc2047Header ( System.String header ) {
 			header = header.Replace ("\"", System.String.Empty);
 			header = anmar.SharpMimeTools.SharpMimeTools.rfc2047decode(header);
 			return header;
 		}
 		/// <summary>
-		/// 
+		/// Decode rfc 2047 definition of quoted-printable
 		/// </summary>
+		/// <param name="charset">charset to use when decoding</param>
+		/// <param name="orig"><c>string</c> to decode</param>
+		/// <returns>the decoded <see cref="System.String" /></returns>
 		public static System.String QuotedPrintable2Unicode ( System.String charset, System.String orig ) {
 			System.Text.Encoding enc = anmar.SharpMimeTools.SharpMimeTools.parseCharSet (charset);
 			if ( enc==null || orig==null )
@@ -113,8 +161,11 @@ namespace anmar.SharpMimeTools
 			return orig;
 		}
 		/// <summary>
-		/// 
+		/// Decode rfc 2047 definition of quoted-printable
 		/// </summary>
+		/// <param name="enc"><see cref="System.Text.Encoding" /> to use</param>
+		/// <param name="orig"><c>string</c> to decode</param>
+		/// <returns>the decoded <see cref="System.String" /></returns>
 		public static System.String QuotedPrintable2Unicode ( System.Text.Encoding enc, ref System.String orig ) {
 			if ( enc==null || orig==null )
 				return orig;
@@ -141,8 +192,10 @@ namespace anmar.SharpMimeTools
 			return orig;
 		}
 		/// <summary>
-		/// 
+		/// rfc 2047 header body decoding
 		/// </summary>
+		/// <param name="word"><c>string</c> to decode</param>
+		/// <returns>the decoded <see cref="System.String" /></returns>
 		public static System.String rfc2047decode ( System.String word ) {
 			System.String[] words;
 			System.String[] wordetails;
@@ -187,8 +240,10 @@ namespace anmar.SharpMimeTools
 			return word;
 		}
 		/// <summary>
-		/// 
+		/// Remove rfc 2822 comments
 		/// </summary>
+		/// <param name="fieldValue"><c>string</c> to uncomment</param>
+		/// <returns></returns>
 		// TODO: refactorize this
 		public static System.String uncommentString ( System.String fieldValue ) {
 			const int a = 0;

@@ -1,6 +1,32 @@
+// -----------------------------------------------------------------------
+//
+//   Copyright (C) 2003-2004 Angel Marin
+// 
+//   This file is part of SharpMimeTools
+//
+//   SharpMimeTools is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU Lesser General Public
+//   License as published by the Free Software Foundation; either
+//   version 2.1 of the License, or (at your option) any later version.
+//
+//   SharpMimeTools is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   Lesser General Public License for more details.
+//
+//   You should have received a copy of the GNU Lesser General Public
+//   License along with SharpMimeTools; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+// -----------------------------------------------------------------------
+
 using System;
 
-namespace anmar.SharpMimeTools {
+namespace anmar.SharpMimeTools
+{
+	/// <summary>
+	/// rfc 2045 entity
+	/// </summary>
 	public class SharpMimeMessage : System.Collections.IEnumerable {
 		private struct MessageInfo {
 			internal long start;
@@ -21,6 +47,10 @@ namespace anmar.SharpMimeTools {
 		private anmar.SharpMimeTools.SharpMimeMessageStream message;
 		private MessageInfo mi;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SharpMimeMessage"/> class from a <see cref="System.IO.Stream"/>
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> to read the message from</param>
 		public SharpMimeMessage( System.IO.Stream message ) {
 			this.message = new anmar.SharpMimeTools.SharpMimeMessageStream (message);
 			this.mi = new MessageInfo ( this.message, this.message.Stream.Position );
@@ -29,6 +59,11 @@ namespace anmar.SharpMimeTools {
 			this.message = message;
 			this.mi = new MessageInfo ( this.message, startpoint );
 		}
+		/// <summary>
+		/// Dumps the body of this entity into a <see cref="System.IO.Stream"/>
+		/// </summary>
+		/// <param name="stream"><see cref="System.IO.Stream" /> where we want to write the body</param>
+		/// <returns><b>true</b> OK;<b>false</b> if write operation fails</returns>
 		public bool DumpBody ( System.IO.Stream stream ) {
 			bool error = false;
 			if ( stream.CanWrite ) {
@@ -62,15 +97,32 @@ namespace anmar.SharpMimeTools {
 			}
 			return !error;
 		}
+		/// <summary>
+		/// Dumps the body of this entity into a file
+		/// </summary>
+		/// <param name="path">path of the destination folder</param>
+		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
 		public System.IO.FileInfo DumpBody ( System.String path ) {
 			return this.DumpBody ( path, this.Name );
 		}
+		/// <summary>
+		/// Dumps the body of this entity into a file
+		/// </summary>
+		/// <param name="path">path of the destination folder</param>
+		/// <param name="generatename">true if the filename must be generated incase we can't find a valid one in the headers</param>
+		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
 		public System.IO.FileInfo DumpBody ( System.String path, bool generatename ) {
 			System.String name = this.Name;
 			if ( name==null && generatename )
 				name = System.String.Format ( "generated_{0}.{1}", this.GetHashCode(), this.Header.SubType );
 			return this.DumpBody ( path, name );
 		}
+		/// <summary>
+		/// Dumps the body of this entity into a file
+		/// </summary>
+		/// <param name="path">path of the destination folder</param>
+		/// <param name="name">name of the file</param>
+		/// <returns><see cref="System.IO.FileInfo" /> that represents the file where the body has been saved</returns>
 		public System.IO.FileInfo DumpBody ( System.String path, System.String name ) {
 			System.IO.FileInfo file = null;
 			if ( name!=null ) {
@@ -122,10 +174,19 @@ namespace anmar.SharpMimeTools {
 			}
 			return file;
 		}
+		/// <summary>
+		/// Returns an enumerator that can iterate through the parts of a multipart entity
+		/// </summary>
+		/// <returns>A <see cref="System.Collections.IEnumerator" /> for the parts of a multipart entity</returns>
 		public System.Collections.IEnumerator GetEnumerator() {
 			this.parse();
 			return this.mi.parts.GetEnumerator();
 		}
+		/// <summary>
+		/// Returns the requested part of a multipart entity
+		/// </summary>
+		/// <param name="index">index of the requested part</param>
+		/// <returns>A <see cref="anmar.SharpMimeTools.SharpMimeMessage" /> for the requested part</returns>
 		public anmar.SharpMimeTools.SharpMimeMessage GetPart ( int index ) {
 			return this.Parts.Get ( index );
 		}
@@ -170,9 +231,18 @@ namespace anmar.SharpMimeTools {
 			}
 			return !error;
 		}
+		/// <summary>
+		/// Gets header fields for this entity
+		/// </summary>
+		/// <param name="name">field name</param>
+		/// <remarks>Field names is case insentitive</remarks>
 		public System.String this[ System.Object name ] {
 			get { return this.mi.header[ name.ToString()]; }
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public System.String Body {
 			get {
 				this.parse();
@@ -188,6 +258,10 @@ namespace anmar.SharpMimeTools {
 				}
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public System.String BodyDecoded {
 			get {
 				switch (this.Header.ContentTransferEncoding) {
@@ -201,16 +275,28 @@ namespace anmar.SharpMimeTools {
 				return this.Body;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public System.String Disposition {
 			get {
 				return this.Header.ContentDispositionParameters["Content-Disposition"];
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public anmar.SharpMimeTools.SharpMimeHeader Header {
 			get {
 				return this.mi.header;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public bool IsBrowserDisplay {
 			get {
 				switch (this.mi.header.TopLevelMediaType) {
@@ -224,6 +310,10 @@ namespace anmar.SharpMimeTools {
 				}
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public bool IsMultipart {
 			get {
 				switch (this.mi.header.TopLevelMediaType) {
@@ -235,6 +325,10 @@ namespace anmar.SharpMimeTools {
 				}
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public bool IsTextBrowserDisplay {
 			get {
 				if ( this.mi.header.TopLevelMediaType.Equals(anmar.SharpMimeTools.MimeTopLevelMediaType.text) && this.mi.header.SubType.Equals("plain") ) {
@@ -244,6 +338,10 @@ namespace anmar.SharpMimeTools {
 				}
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public System.String Name {
 			get {
 				this.parse();
@@ -276,12 +374,20 @@ namespace anmar.SharpMimeTools {
 				return this.mi.parts;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public int PartsCount {
 			get {
 				this.parse();
 				return this.mi.parts.Count;
 			}
 		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
 		public long Size {
 			get {
 				this.parse();

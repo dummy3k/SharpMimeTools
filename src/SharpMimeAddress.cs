@@ -1,3 +1,25 @@
+// -----------------------------------------------------------------------
+//
+//   Copyright (C) 2003-2004 Angel Marin
+// 
+//   This file is part of SharpMimeTools
+//
+//   SharpMimeTools is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU Lesser General Public
+//   License as published by the Free Software Foundation; either
+//   version 2.1 of the License, or (at your option) any later version.
+//
+//   SharpMimeTools is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+//   Lesser General Public License for more details.
+//
+//   You should have received a copy of the GNU Lesser General Public
+//   License along with SharpMimeTools; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+// -----------------------------------------------------------------------
+
 using System;
 
 namespace anmar.SharpMimeTools
@@ -45,16 +67,27 @@ namespace anmar.SharpMimeTools
 			return text.ToString(); 
 		}
 	}
+	/// <summary>
+	/// rfc 2822 email address
+	/// </summary>
 	public class SharpMimeAddress {
-		protected System.String name;
-		protected System.String address;
+		private System.String name;
+		private System.String address;
+		/// <summary>
+		/// Initializes a new address from a RFC 2822 name-addr specification string
+		/// </summary>
+		/// <param name="dir">RFC 2822 name-addr address</param>
+		/// 
 		public SharpMimeAddress ( System.String dir ) {
 			name = anmar.SharpMimeTools.SharpMimeTools.parseFrom ( dir, 1 );
 			address = anmar.SharpMimeTools.SharpMimeTools.parseFrom ( dir, 2 );
 		}
-		public System.String this [object key] {
+		/// <summary>
+		/// Gets the decoded address or name contained in the name-addr
+		/// </summary>
+		public System.String this [System.Object key] {
 			get {
-				if ( key == null ) throw new ArgumentNullException();
+				if ( key == null ) throw new System.ArgumentNullException();
 				switch (key.ToString()) {
 					case "0":
 					case "name":
@@ -66,7 +99,11 @@ namespace anmar.SharpMimeTools
 				return null;
 			}
 		}
-		public override string ToString() {
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <returns></returns>
+		public override System.String ToString() {
 			if ( this.name.Equals (System.String.Empty ) && this.address.Equals (System.String.Empty ) )
 				return "";
 			if ( this.name.Equals (System.String.Empty ) )
@@ -74,6 +111,9 @@ namespace anmar.SharpMimeTools
 			else
 				return String.Format( "\"{0}\" <{1}>" , this.name , this.address);
 		}
+		/// <summary>
+		/// Gets the length of the decoded address
+		/// </summary>
 		public int Length {
 			get {
 				return this.name.Length + this.address.Length;

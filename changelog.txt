@@ -1,3 +1,7 @@
+06/30/2004
+ - Added Copyright notice to all source files
+ - Added initial comments to public members
+
 06/23/2004
  - Bugfix: Content-Transfer-Encoding was not being considered case
    insensitive
