@@ -1,3 +1,12 @@
+01/23/2005
+ - Adjusted part of the ABNF syntax to a equivalent but more readable one.
+ - Added the ABNF definition for comment.
+ - Bugfix: The ABNF definition for dcontent had a missing ].
+ - Removed redundant brackets and quantifiers to several ABNF items.
+ - Other minor improvements to the ABNF items to get better performance.
+ - Added static Regex for address definition.
+ - Use the above in SharpMimeAddressCollection constructor.
+ 
 01/02/2005
  - Update copyright notice.
  - [nant] Define build simbols RELEASE, NET_1_1, NET_2_0, MONO_1_0, MONO_2_0, API_1_1 and API_2_0.

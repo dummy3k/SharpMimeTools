@@ -28,11 +28,9 @@ namespace anmar.SharpMimeTools
 		protected System.Collections.ArrayList list = new System.Collections.ArrayList();
 
 		public SharpMimeAddressCollection ( System.String text ) {
-			System.Text.RegularExpressions.Regex email = new System.Text.RegularExpressions.Regex(
-			    @"(" + anmar.SharpMimeTools.ABNF.address + @")");
-			System.String[] tokens = email.Split(text);
+			System.String[] tokens = anmar.SharpMimeTools.ABNF.address_regex.Split(text);
 			foreach ( System.String token in tokens ) {
-				if ( email.IsMatch(token ) )
+				if ( anmar.SharpMimeTools.ABNF.address_regex.IsMatch(token ) )
 					this.Add ( new anmar.SharpMimeTools.SharpMimeAddress( token ) );
 			}
 		}
