@@ -1,3 +1,6 @@
+04/22/2005
+ - Bugfix: The message top level mime type was not being handled properly while parsing.
+
 01/23/2005
  - Adjusted part of the ABNF syntax to a equivalent but more readable one.
  - Added the ABNF definition for comment.

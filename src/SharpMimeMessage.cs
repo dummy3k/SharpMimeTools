@@ -59,6 +59,11 @@ namespace anmar.SharpMimeTools
 			this.message = message;
 			this.mi = new MessageInfo ( this.message, startpoint );
 		}
+		private SharpMimeMessage( anmar.SharpMimeTools.SharpMimeMessageStream message, long startpoint, long endpoint ) {
+			this.message = message;
+			this.mi = new MessageInfo ( this.message, startpoint );
+			this.mi.end = endpoint;
+		}
 		/// <summary>
 		/// Dumps the body of this entity into a <see cref="System.IO.Stream"/>
 		/// </summary>
@@ -192,7 +197,7 @@ namespace anmar.SharpMimeTools
 		}
 		private bool parse () {
 			bool error = false;
-			if ( log.IsDebugEnabled ) log.Debug ("Parsing requested, type: " + this.mi.header.TopLevelMediaType.ToString() );
+			if ( log.IsDebugEnabled ) log.Debug (System.String.Concat("Parsing requested, type: ", this.mi.header.TopLevelMediaType.ToString(), ", subtype: ", this.mi.header.SubType) );
 			if ( !this.IsMultipart || this.Equals(this.mi.parts.Parent) ) {
 				if ( log.IsDebugEnabled )
 					log.Debug ("Parsing requested and this is not a multipart or it is already parsed");
@@ -200,6 +205,10 @@ namespace anmar.SharpMimeTools
 			}
 			switch (this.mi.header.TopLevelMediaType) {
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.message:
+					this.mi.parts.Parent = this;
+					anmar.SharpMimeTools.SharpMimeMessage message = new anmar.SharpMimeTools.SharpMimeMessage (this.message, this.mi.start_body, this.mi.end );
+					this.mi.parts.Add (message);
+					break;
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.multipart:
 					this.message.SeekPoint ( this.mi.start_body );
 					System.String line;
