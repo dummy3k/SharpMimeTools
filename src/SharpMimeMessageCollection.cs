@@ -40,6 +40,9 @@ namespace anmar.SharpMimeTools
 		public System.Collections.IEnumerator GetEnumerator() {
 			return messages.GetEnumerator();
 		}
+		public void Clear () {
+			messages.Clear();
+		}
 		public int Count {
 			get {
 				return messages.Count;

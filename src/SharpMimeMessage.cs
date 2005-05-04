@@ -65,6 +65,15 @@ namespace anmar.SharpMimeTools
 			this.mi.end = endpoint;
 		}
 		/// <summary>
+		/// Clears the parts references contained in this instance and calls the <b>Close</b> method in those parts.
+		/// </summary>
+		/// <remarks>This method does not close the underling <see cref="System.IO.Stream" /> used to create this instance.</remarks>
+		public void Close() {
+			foreach ( anmar.SharpMimeTools.SharpMimeMessage part in this.mi.parts )
+				part.Close();
+			this.mi.parts.Clear();
+		}
+		/// <summary>
 		/// Dumps the body of this entity into a <see cref="System.IO.Stream"/>
 		/// </summary>
 		/// <param name="stream"><see cref="System.IO.Stream" /> where we want to write the body</param>
@@ -78,7 +87,13 @@ namespace anmar.SharpMimeTools
 						buffer = this.mi.header.Encoding.GetBytes(this.BodyDecoded);
 						break;
 					case "base64":
-						buffer = System.Convert.FromBase64String(this.Body);
+						try {
+							buffer = System.Convert.FromBase64String(this.Body);
+						} catch ( System.Exception e ) {
+							error = true;
+							if ( log.IsErrorEnabled )
+								log.Error("Error Converting base64 string", e);
+						}
 						break;
 					case "7bit":
 					case "8bit":
@@ -93,8 +108,10 @@ namespace anmar.SharpMimeTools
 				try {
 					if ( !error && buffer!=null )
 						stream.Write ( buffer, 0, buffer.Length );
-				} catch ( System.Exception ) {
+				} catch ( System.Exception e ) {
 					error = true;
+					if ( log.IsErrorEnabled )
+						log.Error("Error dumping body", e);
 				}
 				buffer = null;
 			} else {
@@ -279,7 +296,17 @@ namespace anmar.SharpMimeTools
 						anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, ref body );
 						return body;
 					case "base64":
-						return this.mi.header.Encoding.GetString (System.Convert.FromBase64String(this.Body));
+						System.Byte[] tmp = null;
+						try {
+							tmp = System.Convert.FromBase64String(this.Body);
+						} catch ( System.Exception e ) {
+							if ( log.IsErrorEnabled )
+								log.Error("Error dumping body", e);
+						}
+						if ( tmp!=null )
+							return this.mi.header.Encoding.GetString(tmp);
+						else
+							return System.String.Empty;
 				}
 				return this.Body;
 			}

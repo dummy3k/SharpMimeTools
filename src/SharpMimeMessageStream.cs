@@ -29,8 +29,8 @@ namespace anmar.SharpMimeTools
 	internal class SharpMimeMessageStream {
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		protected System.IO.Stream stream;
-		System.IO.StreamReader sr;
-		System.Text.Encoding enc;
+		private System.IO.StreamReader sr;
+		private System.Text.Encoding enc;
 		protected long initpos;
 		protected long finalpos;
 
