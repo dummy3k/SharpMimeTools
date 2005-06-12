@@ -21,28 +21,28 @@
   <Configuration runwithwarnings="False" name="Release">
     <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
     <Execution commandlineparameters="" consolepause="True" />
-    <Output directory=".\bin\" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+    <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
   </Configuration>
   <Configurations active="Release">
     <Configuration runwithwarnings="False" name="Debug">
       <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
-      <Output directory=".\bin\" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+      <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>
     <Configuration runwithwarnings="False" name="Release">
       <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
-      <Output directory=".\bin\" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+      <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>
     <Configuration runwithwarnings="False" name="ReleaseMono">
       <CodeGeneration runtime="Mono" compiler="Mcs" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="MONO" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
-      <Output directory=".\bin\" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+      <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>
     <Configuration runwithwarnings="False" name="DebugMono">
       <CodeGeneration runtime="Mono" compiler="Mcs" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG;MONO" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
-      <Output directory=".\bin\" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
+      <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>
   </Configurations>
 </Project>

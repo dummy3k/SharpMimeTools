@@ -1,3 +1,6 @@
+06/12/2005
+ - Bugfix: rfc2047decode wasn't following section 5 rule (1) properly.
+
 05/04/2005
  - Bugfix: While decoding malformed base64 parts exceptions must be caught.
  - SharpMimeMessage: Added Close method. It clears the parts references.
