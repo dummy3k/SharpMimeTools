@@ -1,3 +1,9 @@
+07/10/2005
+ - QuotedPrintable2Unicode is now rewritten using a StringBuilder. This should improve
+   the performance when there are lots of replacements to do. It also avoids partial decodes.
+ - [SF BUG - 1234080] QuotedPrintable2Unicode now takes care of the different possible sizes
+   that a replaced item can have. Thanks Zvika Rap for the heads up.
+
 06/12/2005
  - Bugfix: rfc2047decode wasn't following section 5 rule (1) properly.
    Thanks Christophe Delaforge for taking this to my attention.

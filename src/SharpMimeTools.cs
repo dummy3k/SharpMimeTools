@@ -172,25 +172,32 @@ namespace anmar.SharpMimeTools
 			if ( enc==null || orig==null )
 				return;
 
+			System.Text.StringBuilder decoded = new System.Text.StringBuilder(orig);
 			int i = 0;
 			System.String hexNumber;
 			System.Byte[] ch = new System.Byte[1];
-			while (i < orig.Length - 2 ) {
-				if ( orig[i] == '=' ) {
-					hexNumber = orig.Substring ( i+1, 2 );
+			while ( i < decoded.Length - 2 ) {
+				System.String decodedItem = null;
+				if ( decoded[i] == '=' ) {
+					hexNumber = decoded.ToString(i+1, 2);
 					if ( hexNumber.Equals(ABNF.CRLF) ) {
-						orig = orig.Replace( "=" + hexNumber, System.String.Empty );
+						decodedItem = System.String.Empty;
 					} else {
 						try {
 							//TODO: this ugly workaround should disapear
 							ch[0] = System.Convert.ToByte(hexNumber, 16);
-							orig = orig.Replace( "=" + hexNumber, enc.GetString ( ch ) );
-						} catch (System.Exception ) {
-						}
+							decodedItem = enc.GetString ( ch );
+						} catch ( System.Exception ) {}
 					}
+					if ( decodedItem!=null )
+						decoded.Replace( "=" + hexNumber, decodedItem );
 				}
-				i++;
+				if ( decodedItem!=null )
+					i+=decodedItem.Length;
+				else
+					i++;
 			}
+			orig = decoded.ToString();
 			return;
 		}
 		/// <summary>
