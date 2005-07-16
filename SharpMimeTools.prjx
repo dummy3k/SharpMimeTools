@@ -13,19 +13,20 @@
     <File name=".\doc\readme.txt" subtype="Code" buildaction="Nothing" dependson="" data="" />
     <File name=".\doc\TODO.txt" subtype="Code" buildaction="Nothing" dependson="" data="" />
     <File name=".\SharpMimeTools.build" subtype="Code" buildaction="Nothing" dependson="" data="" />
+    <File name=".\src\SharpMessage.cs" subtype="Code" buildaction="Compile" dependson="" data="" />
   </Contents>
   <References>
     <Reference type="Assembly" refto=".\bin\log4net.dll" localcopy="True" />
   </References>
   <DeploymentInformation target="" script="" strategy="File" />
-  <Configuration runwithwarnings="False" name="Release">
-    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="False" optimize="True" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
+  <Configuration runwithwarnings="False" name="Debug">
+    <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
     <Execution commandlineparameters="" consolepause="True" />
     <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
   </Configuration>
-  <Configurations active="Release">
+  <Configurations active="Debug">
     <Configuration runwithwarnings="False" name="Debug">
-      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG" generatexmldocumentation="True" win32Icon="" noconfig="False" nostdlib="False" />
+      <CodeGeneration runtime="MsNet" compiler="Csc" compilerversion="Standard" warninglevel="4" nowarn="" includedebuginformation="True" optimize="False" unsafecodeallowed="False" generateoverflowchecks="False" mainclass="" target="Library" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="" noconfig="False" nostdlib="False" />
       <Execution commandlineparameters="" consolepause="True" />
       <Output directory=".\bin" assembly="SharpMimeTools" executeScript="" executeBeforeBuild="" executeAfterBuild="" executeBeforeBuildArguments="" executeAfterBuildArguments="" />
     </Configuration>
