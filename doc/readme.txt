@@ -1,5 +1,5 @@
   SharpMimeTools - Mime Decoder written in C#
-    http://anmar.eu.org/projects/sharpwebmail/
+    http://anmar.eu.org/projects/sharpmimetools/
 
 Introduction
 --------------------------------
