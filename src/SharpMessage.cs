@@ -92,7 +92,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <remarks>If there is not a <b>Date</b> field present in the headers (or it has an invalid format) then
 		/// the date is extrated from the last <b>Received</b> field. If neither of them are found,
-		/// <see cref="System.Date.MinValue" /> is returned.</remarks>
+		/// <b>System.Date.MinValue</b> is returned.</remarks>
 		public System.DateTime Date {
 			get { return  this._date; }
 		}

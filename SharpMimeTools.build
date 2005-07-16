@@ -80,7 +80,7 @@
 						<!-- Global Settings -->
 						<property name="CleanIntermediates" value="true" />
 						<property name="CopyrightText" value="Copyright (C) 2003-2005 Angel Marin. All Rights Reserved." />
-						<property name="CopyrightHref" value="http://anmar.eu.org/projects/sharpwebmail/" />
+						<property name="CopyrightHref" value="http://anmar.eu.org/projects/sharpmimetools/" />
 						<property name="FeedbackEmailAddress" value="anmar at anmar.eu.org" />
 						<property name="Preliminary" value="true" />
 						<property name="SdkDocLanguage" value="en" />

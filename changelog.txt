@@ -2,6 +2,9 @@
  - Implemented the SharpMessage as a general purpose parser. It only exposes
    the basic content: Subject, from, body, attachments, etc. All the mime complexity
    is handled internally and all the content is exposed parsed and decoded.
+ - Generated a key pair and referenced in AssemblyInfo.cs so the compiled dll has
+   strong name.
+ - Version number set to 0.2
 
 07/10/2005
  - QuotedPrintable2Unicode is now rewritten using a StringBuilder. This should improve
