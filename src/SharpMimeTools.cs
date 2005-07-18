@@ -29,6 +29,12 @@ namespace anmar.SharpMimeTools
 	/// </summary>
 	public class SharpMimeTools {
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static System.String[] _date_formats = new System.String[] {
+																@"dddd, d MMM yyyy H:m:s zzz", @"ddd, d MMM yyyy H:m:s zzz", @"d MMM yyyy H:m:s zzz",
+																@"dddd, d MMM yy H:m:s zzz", @"ddd, d MMM yy H:m:s zzz", @"d MMM yy H:m:s zzz",
+																@"dddd, d MMM yyyy H:m zzz", @"ddd, d MMM yyyy H:m zzz", @"d MMM yyyy H:m zzz",
+																@"dddd, d MMM yy H:m zzz", @"ddd, d MMM yy H:m zzz", @"d MMM yy H:m zzz"
+			};
 		/// <summary>
 		/// Parses a <see cref="System.Text.Encoding" /> from a charset name
 		/// </summary>
@@ -79,6 +85,8 @@ namespace anmar.SharpMimeTools
 		/// <param name="date">rfc 2822 date-time</param>
 		/// <returns>A <see cref="System.DateTime" /> from the parsed header body</returns>
 		public static System.DateTime parseDate ( System.String date ) {
+			if ( date==null || date.Equals(System.String.Empty) )
+				return System.DateTime.MinValue;
 			System.DateTime msgDateTime;
 			date = anmar.SharpMimeTools.SharpMimeTools.uncommentString (date);
 			msgDateTime = new System.DateTime (0);
@@ -94,21 +102,21 @@ namespace anmar.SharpMimeTools
 				date = date.Replace("EST", "-0700");
 				date = date.Replace("PDT", "-0700");
 				date = date.Replace("PST", "-0800");
+
+				date = date.Replace("AM", System.String.Empty);
+				date = date.Replace("PM", System.String.Empty);
 				int rpos = date.LastIndexOfAny(new Char[]{' ', '\t'});
-				if (rpos != date.Length - 6)
+				if (rpos>0 && rpos != date.Length - 6)
 					date = date.Substring(0, rpos + 1) + "-0000";
 				date = date.Insert(date.Length-2, ":");
 				msgDateTime = DateTime.ParseExact(date, 
-					new string[] {	@"dddd, d MMM yyyy H:m:s zzz", @"ddd, d MMM yyyy H:m:s zzz", @"d MMM yyyy H:m:s zzz",
-									 @"dddd, d MMM yy H:m:s zzz", @"ddd, d MMM yy H:m:s zzz", @"d MMM yy H:m:s zzz",
-									 @"dddd, d MMM yyyy H:m zzz", @"ddd, d MMM yyyy H:m zzz", @"d MMM yyyy H:m zzz",
-									 @"dddd, d MMM yy H:m zzz", @"ddd, d MMM yy H:m zzz", @"d MMM yy H:m zzz"},
+					_date_formats,
 					System.Globalization.CultureInfo.CreateSpecificCulture("en-us"),
 					System.Globalization.DateTimeStyles.AllowInnerWhite);
 			} catch ( System.Exception e ) {
 				msgDateTime = new System.DateTime (0);
 				if ( log.IsErrorEnabled )
-					log.Error("Error parsing date: " + date, e);
+					log.Error(System.String.Concat("Error parsing date: [", date, "]"), e);
 			}
 			return msgDateTime;
 		}
@@ -255,6 +263,10 @@ namespace anmar.SharpMimeTools
 		/// <returns></returns>
 		// TODO: refactorize this
 		public static System.String uncommentString ( System.String fieldValue ) {
+			if ( fieldValue==null || fieldValue.Equals(System.String.Empty) )
+				return fieldValue;
+			if ( fieldValue.IndexOf('(')==-1 )
+				return fieldValue.Trim();
 			const int a = 0;
 			const int b = 1;
 			const int c = 2;

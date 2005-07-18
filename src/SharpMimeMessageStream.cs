@@ -33,6 +33,10 @@ namespace anmar.SharpMimeTools
 		private System.Text.Encoding enc;
 		protected long initpos;
 		protected long finalpos;
+		
+		private System.String _buf;
+		private long _buf_initpos;
+		private long _buf_finalpos;
 
 		public SharpMimeMessageStream ( System.IO.Stream stream ) {
 			this.stream = stream;
@@ -55,14 +59,23 @@ namespace anmar.SharpMimeTools
 		}
 		public System.String ReadLine ( ) {
 			System.String line;
-			this.initpos = this.Position;
-			line = sr.ReadLine();
-			if ( line!=null ) {
-				this.finalpos=this.Position+this.enc.GetByteCount(line.ToCharArray())+this.enc.GetByteCount(new System.Char[]{'\r','\n'});
-				if ( line.StartsWith(".." ) )
-					line=line.Remove(0,1);
+			if ( this._buf!=null ) {
+				line = this._buf;
+				this.initpos = this._buf_initpos;
+				this.finalpos = this._buf_finalpos;
+				this._buf = null;
 			} else {
-				this.finalpos=this.stream.Length;
+				this.initpos = this.Position;
+				line = sr.ReadLine();
+				if ( line!=null ) {
+					this.finalpos=this.Position+this.enc.GetByteCount(line.ToCharArray())+this.enc.GetByteCount(new System.Char[]{'\r','\n'});
+					if ( line.Equals(".") )
+						line = null;
+					else if ( line.StartsWith(".." ) )
+						line=line.Remove(0,1);
+				} else {
+					this.finalpos=this.stream.Length;
+				}
 			}
 			return line;
 		}
@@ -72,7 +85,6 @@ namespace anmar.SharpMimeTools
 		public System.Text.StringBuilder ReadLinesSB ( long start, long end ) {
 			System.Text.StringBuilder lines = new System.Text.StringBuilder();
 			System.String line;
-			long initpos = this.Position;
 			this.SeekPoint ( start );
 			do {
 				line = this.ReadLine();
@@ -83,33 +95,47 @@ namespace anmar.SharpMimeTools
 					lines.Append ( line );
 				}
 			} while ( line!=null && this.Position!=-1 && this.Position<end );
-			this.initpos = initpos;
+			this.initpos = start;
 			return lines;            
 		}
 		public void ReadLine_Undo () {
 			this.SeekPoint(this.initpos);
 			this.finalpos = this.initpos;
 		}
+		public void ReadLine_Undo ( System.String line ) {
+			this._buf_initpos = this.initpos;
+			this._buf_finalpos = this.finalpos;
+			this._buf = line;
+			this.finalpos = this.initpos;
+		}
 		public System.String ReadUnfoldedLine () {
 			long initpos = this.Position;
-			System.String  tmpline;
-			System.Text.StringBuilder line = new System.Text.StringBuilder(72);
-			tmpline = this.ReadLine();
-			if ( tmpline!=null && tmpline.Length>0 ) {
-				line.Append(tmpline);
-				for ( ;;)  {
+			System.String first_line = this.ReadLine();
+			if ( first_line!=null && first_line.Length>0 ) {
+				System.Text.StringBuilder line = null;
+				System.String tmpline;
+				for ( ;; )  {
 					tmpline = this.ReadLine();
 					// RFC 2822 - 2.2.3 Long Header Fields
 					if ( tmpline!=null && tmpline.Length>0 && (tmpline[0] == ' ' || tmpline[0] == '\t') ) {
-						line = line.Append(tmpline, 0, tmpline.Length );
+						if ( line==null )
+							line = new System.Text.StringBuilder(first_line, 72);
+						line.Append(tmpline);
 					} else {
-						this.ReadLine_Undo();
+						this.ReadLine_Undo(tmpline);
 						break;
 					}
 				}
 				this.initpos = initpos;
+				if ( this.finalpos!=this.initpos ) {
+					if ( line==null )
+						return first_line;
+					else
+						return line.ToString();
+				} else
+					return null;
 			}
-			return (this.finalpos!=this.initpos)?line.ToString():null;
+			return (this.finalpos!=this.initpos)?first_line:null;
 		}
 		public bool SeekLine ( long line ) {
 			long linenumber = 0;

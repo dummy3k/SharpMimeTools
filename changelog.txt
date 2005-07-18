@@ -1,3 +1,22 @@
+07/18/2005
+ - [SharpMessage] There may be no Received field.
+ - [SharpMimeTools] Date formats are always the same, so is faster to use a static array
+   for them.
+ - [SharpMimeTools] parseDate: Skip date parsing on empty strings sooner.
+ - [SharpMimeTools] parseDate: Remove AM/PM string if found.
+ - [SharpMimeTools] parseDate: The log message in case of exception while parsing, now encloses
+   the date string so we know exact content.
+ - [SharpMimeTools] uncommentString: Skip parsing on empty strings sooner.
+ - [SharpMimeTools] uncommentString: Skip parsing strings without brackets as those aren't commented.
+ - [SharpMimeMessageStream] Buffer last read line when discarding a read operation to avoid some
+   unnecessary seeks/buffer discards in the stream. This should give a performance boost reading headers.
+ - [SharpMimeMessageStream] Discard line data when it's a dot.
+ - [SharpMimeMessageStream] When reading several lines, record the start point of the read operation
+   properly.
+ - [SharpMimeMessageStream] When reading folded lines, use lazy StringBuffer allocation. Then single line reads
+   (not folded) should be faster.
+ - [SharpMimeMessage] Do not remove trailing dot when reading body as this is handled in the stream.
+
 07/16/2005
  - Implemented the SharpMessage as a general purpose parser. It only exposes
    the basic content: Subject, from, body, attachments, etc. All the mime complexity

@@ -145,6 +145,8 @@ namespace anmar.SharpMimeTools
 			this._date = anmar.SharpMimeTools.SharpMimeTools.parseDate(this._headers.Date);
 			if ( this._date.Equals(System.DateTime.MinValue) ) {
 				System.String date = this._headers["Received"];
+				if ( date==null )
+					date = System.String.Empty;
 				if ( date.IndexOf("\r\n")>0 )
 					date = date.Substring(0, date.IndexOf("\r\n"));
 				if ( date.LastIndexOf(';')>0 )

@@ -86,7 +86,7 @@ namespace anmar.SharpMimeTools
 				if ( line!=null && line.StartsWith ("+OK") ) {
 					if ( log.IsDebugEnabled ) log.Debug ("+OK present at top of the message");
 					this.startpoint = this.message.Position;
-				} else this.message.ReadLine_Undo();
+				} else this.message.ReadLine_Undo(line);
 			}
 			this.headers = new System.Collections.Specialized.HybridDictionary(2, true);
 			this.parse();
@@ -165,7 +165,7 @@ namespace anmar.SharpMimeTools
 				if ( line.Length == 0 ) {
 					this.endpoint = this.message.Position_preRead;
 					this.startbody = this.message.Position;
-					this.message.ReadLine_Undo();
+					this.message.ReadLine_Undo(line);
 					break;
 				} else {
 					String [] headerline = line.Split ( new Char[] {':'}, 2);

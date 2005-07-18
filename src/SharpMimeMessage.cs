@@ -275,9 +275,9 @@ namespace anmar.SharpMimeTools
 				if ( this.mi.parts.Count == 0 ) {
 					this.message.Enconding = this.mi.header.Encoding;
 					if ( this.mi.end ==-1 ) {
-						return this.message.ReadAll ( this.mi.start_body ).TrimEnd ( new Char[]{'.'} );
+						return this.message.ReadAll(this.mi.start_body);
 					} else {
-						return this.message.ReadLines ( this.mi.start_body, this.mi.end ).TrimEnd ( new Char[]{'.'} );
+						return this.message.ReadLines(this.mi.start_body, this.mi.end);
 					}
 				} else {
 					return null;
