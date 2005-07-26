@@ -1,3 +1,8 @@
+07/26/2005
+ - [SharpMimeTools] QuotedPrintable2Unicode: If the encoded equal sign is decoded too early then
+   we can end up with incorrect decodes. Thanks bittercoder for the heads up.
+ - [SharpMimeMessageStream] Discard buffered data if there is a new seek.
+
 07/18/2005
  - [SharpMessage] There may be no Received field.
  - [SharpMimeTools] Date formats are always the same, so is faster to use a static array
@@ -16,6 +21,7 @@
  - [SharpMimeMessageStream] When reading folded lines, use lazy StringBuffer allocation. Then single line reads
    (not folded) should be faster.
  - [SharpMimeMessage] Do not remove trailing dot when reading body as this is handled in the stream.
+ - Version number set to 0.3
 
 07/16/2005
  - Implemented the SharpMessage as a general purpose parser. It only exposes

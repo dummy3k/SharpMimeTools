@@ -190,6 +190,9 @@ namespace anmar.SharpMimeTools
 					hexNumber = decoded.ToString(i+1, 2);
 					if ( hexNumber.Equals(ABNF.CRLF) ) {
 						decodedItem = System.String.Empty;
+					// Do not replace 3D(=)
+					} else if ( hexNumber.ToUpper().Equals("3D") ) {
+						decodedItem = null;
 					} else {
 						try {
 							//TODO: this ugly workaround should disapear
@@ -205,6 +208,8 @@ namespace anmar.SharpMimeTools
 				else
 					i++;
 			}
+			decoded.Replace("=3D", "=");
+			decoded.Replace("=3d", "=");
 			orig = decoded.ToString();
 			return;
 		}

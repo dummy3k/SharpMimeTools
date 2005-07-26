@@ -154,6 +154,7 @@ namespace anmar.SharpMimeTools
 				this.sr.DiscardBufferedData();
 				this.finalpos = point;
 			}
+			this._buf = null;
 		}
 		public System.Text.Encoding Enconding {
 			set {
