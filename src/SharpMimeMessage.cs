@@ -156,30 +156,36 @@ namespace anmar.SharpMimeTools
 					System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo ( path );
 					dir.Create();
 					file = new System.IO.FileInfo (System.IO.Path.Combine (path, name) );
-					if ( dir.Exists
-						 && dir.FullName.Equals (new System.IO.DirectoryInfo (file.Directory.FullName).FullName) ) {
-						if ( !file.Exists ) {
-							if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
-								file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
-							if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
-								file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
-							if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
-								file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
-							System.IO.Stream stream = file.Create();
-							bool error = !this.DumpBody (stream);
-							stream.Close();
-							if ( error ) {
-								if ( log.IsErrorEnabled )
-									log.Error ("Error writtin to disk: " + name);
-								file.Delete();
-							} else {
+					if ( dir.Exists ) {
+						if ( dir.FullName.Equals (new System.IO.DirectoryInfo (file.Directory.FullName).FullName) ) {
+							if ( !file.Exists ) {
 								if ( log.IsDebugEnabled )
-									log.Debug ("Attachment saved: " + name);
-								// The file should be there
-								file.Refresh();
-							}
-						}
-					}
+									log.Debug (System.String.Concat("Saving attachment [", file.FullName, "] ..."));
+								if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
+									file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
+								if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
+									file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
+								if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
+									file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
+								System.IO.Stream stream = file.Create();
+								bool error = !this.DumpBody (stream);
+								stream.Close();
+								if ( error ) {
+									if ( log.IsErrorEnabled )
+										log.Error (System.String.Concat("Error writting file [", file.FullName, "] to disk"));
+									file.Delete();
+								} else {
+									if ( log.IsDebugEnabled )
+										log.Debug (System.String.Concat("Attachment saved [", file.FullName, "]"));
+									// The file should be there
+									file.Refresh();
+								}
+							} else if ( log.IsDebugEnabled )
+								log.Debug("File already exists, skipping.");
+						} else if ( log.IsDebugEnabled )
+							log.Debug(System.String.Concat ("Folder name mistmatch. [", dir.FullName, "]<>[", new System.IO.DirectoryInfo (file.Directory.FullName).FullName, "]"));
+					} else if ( log.IsErrorEnabled )
+						log.Error ("Destination folder does not exists.");
 					dir = null;
 				} catch ( System.Exception e ) {
 					if ( log.IsErrorEnabled )

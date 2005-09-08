@@ -1,3 +1,7 @@
+09/08/2005
+ - [SharpMimeMessage] Added more debug info to DumpBody method.
+ - Added Makefile for linux compatibility.
+
 07/26/2005
  - [SharpMimeTools] QuotedPrintable2Unicode: If the encoded equal sign is decoded too early then
    we can end up with incorrect decodes. Thanks bittercoder for the heads up.
