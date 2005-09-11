@@ -58,24 +58,45 @@ namespace anmar.SharpMimeTools
             return this.ReadLines ( start, this.stream.Length );
 		}
 		public System.String ReadLine ( ) {
-			System.String line;
+			System.String line = null;
 			if ( this._buf!=null ) {
 				line = this._buf;
 				this.initpos = this._buf_initpos;
 				this.finalpos = this._buf_finalpos;
 				this._buf = null;
 			} else {
+				System.Text.StringBuilder sb = new System.Text.StringBuilder(80);
+				int ending = 0;
 				this.initpos = this.Position;
-				line = sr.ReadLine();
-				if ( line!=null ) {
-					this.finalpos=this.Position+this.enc.GetByteCount(line.ToCharArray())+this.enc.GetByteCount(new System.Char[]{'\r','\n'});
-					if ( line.Equals(".") )
-						line = null;
-					else if ( line.StartsWith(".." ) )
-						line=line.Remove(0,1);
-				} else {
-					this.finalpos=this.stream.Length;
+				for ( int current=sr.Read(); current!=-1; current=sr.Read() ) {
+					sb.Append((char)current);
+					if ( current=='\r' )
+						ending++;
+					else if ( current=='\n' ) {
+						ending++;
+						break;
+					}
 				}
+				// Line ending found
+				if ( ending>0 ) {
+					// Bytes read
+					this.finalpos+=this.enc.GetByteCount(sb.ToString());
+					// A single dot is treated as message end
+					if ( sb.Length==(1+ending) && sb[0]== '.' )
+						sb = null;
+					// Undo the double dots
+					else if ( sb.Length>(1+ending) && sb[0]=='.' && sb[1]=='.' )
+						sb.Remove(0, 1);
+					if ( sb!=null )
+						line = sb.ToString(0, sb.Length-ending);
+				} else {
+					// Not line ending found, so we are at the end of the stream
+					this.finalpos=this.stream.Length;
+					// though at the end of the stream there may be some content
+					if ( sb.Length>0 )
+						line = sb.ToString();
+				}
+				sb = null;
 			}
 			return line;
 		}

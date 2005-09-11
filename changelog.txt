@@ -1,3 +1,8 @@
+09/11/2005
+ - [SharpMimeMessageStream] Rewritten the ReadLine method to bypass the StreamReader
+   implementation. This allows the parsing of files saved in UNIX format. The
+   new implementation also gives a significant performance boost.
+
 09/08/2005
  - [SharpMimeMessage] Added more debug info to DumpBody method.
  - Added Makefile for linux compatibility.
