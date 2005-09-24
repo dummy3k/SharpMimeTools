@@ -263,7 +263,7 @@ namespace anmar.SharpMimeTools
 		/// <value>Content-Transfer-Encoding header body</value>
 		public System.String ContentTransferEncoding {
 			get {
-				System.String tmp = this.GetHeaderField("Content-Type", null, false, false);
+				System.String tmp = this.GetHeaderField("Content-Transfer-Encoding", null, false, false);
 				if ( tmp!=null ) {
 					tmp = tmp.ToLower();
 				}

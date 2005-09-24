@@ -102,6 +102,8 @@ namespace anmar.SharpMimeTools
 						buffer = System.Text.Encoding.ASCII.GetBytes(this.Body);
 						break;
 					default:
+						if ( log.IsErrorEnabled )
+							log.Error(System.String.Concat("Unsuported Content-Transfer-Encoding [", this.Header.ContentTransferEncoding, "]"));
 						error=true;
 						break;
 				}
@@ -115,6 +117,8 @@ namespace anmar.SharpMimeTools
 				}
 				buffer = null;
 			} else {
+				if ( log.IsErrorEnabled )
+					log.Error("Can't write to stream");
 				error = true;
 			}
 			return !error;

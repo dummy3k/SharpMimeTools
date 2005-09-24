@@ -11,7 +11,8 @@
  - [SharpMessage] Allow defining which Mime-Types are allowed.
  - [SharpMessage] Forbidding html content is now possible in the constructor.
  - [SharpMessage] Forbidding attachments is now possible in the constructor.
- - Released as version 0.3b [515]
+ - [SharpMimeHeader] Fixed bug introduced in ContentTransferEncoding earlier today.
+ - [SharpMessage] Added some log statements.
 
 09/11/2005
  - [SharpMimeMessageStream] Rewritten the ReadLine method to bypass the StreamReader
