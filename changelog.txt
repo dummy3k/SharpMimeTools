@@ -1,12 +1,17 @@
 09/24/2005
-- [SharpMimeHeader] Removed the instance of the encoding used to read the headers. Use the 
-  static one instead.
-- [SharpMimeHeader] Added GetHeaderField method to give simple and flexible access to header
-  fields.
-- [SharpMimeHeader] Rewrite all the properties that give access to header fields to use the
-  above method.
-- [SharpMessage] Added GetHeaderField method to give direct access to decoded header fields.
-- [SharpMimeMessageStream] Rename the Encoding property as it had a typo.
+ - [SharpMimeHeader] Removed the instance of the encoding used to read the headers. Use the 
+   static one instead.
+ - [SharpMimeHeader] Added GetHeaderField method to give simple and flexible access to header
+   fields.
+ - [SharpMimeHeader] Rewrite all the properties that give access to header fields to use the
+   above method.
+ - [SharpMessage] Added GetHeaderField method to give direct access to decoded header fields.
+ - [SharpMimeMessageStream] Rename the Encoding property as it had a typo.
+ - [MimeTopLevelMediaType] Now can be used as bit maps.
+ - [SharpMessage] Allow defining which Mime-Types are allowed.
+ - [SharpMessage] Forbidding html content is now possible in the constructor.
+ - [SharpMessage] Forbidding attachments is now possible in the constructor.
+ - Released as version 0.3b [515]
 
 09/11/2005
  - [SharpMimeMessageStream] Rewritten the ReadLine method to bypass the StreamReader

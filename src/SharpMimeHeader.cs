@@ -407,6 +407,7 @@ namespace anmar.SharpMimeTools
 	/// <summary>
 	/// RFC 2046 Initial top-level media types
 	/// </summary>
+	[System.Flags]
 	public enum MimeTopLevelMediaType {
 		/// <summary>
 		/// RFC 2046 section 4.1
