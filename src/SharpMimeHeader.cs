@@ -35,7 +35,6 @@ namespace anmar.SharpMimeTools
 		private long startpoint;
 		private long endpoint;
 		private long startbody;
-		private System.Text.Encoding enc = new System.Text.ASCIIEncoding();
 
 		private struct HeaderInfo {
 			public System.Collections.Specialized.StringDictionary contenttype;
@@ -145,6 +144,26 @@ namespace anmar.SharpMimeTools
 		public System.Collections.IEnumerator GetEnumerator() {
 			return headers.GetEnumerator();
 		}
+		/// <summary>
+		/// Returns the requested header field body.
+		/// </summary>
+		/// <param name="name">Header field name</param>
+		/// <param name="defaultvalue">Value to return when the requested field is not present</param>
+		/// <param name="uncomment"><b>true</b> to uncomment using <see cref="anmar.SharpMimeTools.SharpMimeTools.uncommentString" />; <b>false</b> to return the value unchanged.</param>
+		/// <param name="rfc2047decode"><b>true</b> to decode <see cref="anmar.SharpMimeTools.SharpMimeTools.rfc2047decode" />; <b>false</b> to return the value unchanged.</param>
+		/// <returns>Header field body</returns>
+		public System.String GetHeaderField ( System.String name, System.String defaultvalue, bool uncomment, bool rfc2047decode ) {
+			System.String tmp = this.getProperty(name);
+			if ( tmp==null )
+				tmp = defaultvalue;
+			else {
+				if ( uncomment )
+					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString(tmp);
+				if ( rfc2047decode )
+					tmp = anmar.SharpMimeTools.SharpMimeTools.rfc2047decode(tmp);
+			}
+			return tmp;
+		}
 		private System.String getProperty (  System.String name ) {
 			System.String Value=null;
 			name = name.ToLower();
@@ -160,7 +179,7 @@ namespace anmar.SharpMimeTools
 			}
 			System.String line = System.String.Empty;
 			this.message.SeekPoint ( this.startpoint );
-			this.message.Enconding = this.enc;
+			this.message.Encoding = System.Text.ASCIIEncoding.ASCII;
 			for ( line=this.message.ReadUnfoldedLine(); line!=null ; line=this.message.ReadUnfoldedLine() ) {
 				if ( line.Length == 0 ) {
 					this.endpoint = this.message.Position_preRead;
@@ -196,14 +215,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>CC header body</value>
 		public System.String Cc {
-			get {
-				System.String tmp = this.getProperty("Cc");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Cc", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets the number of header fields found
@@ -218,14 +230,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Content-Disposition header body</value>
 		public System.String ContentDisposition {
-			get {
-				System.String tmp = this.getProperty("Content-Disposition");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Content-Disposition", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets the elements found in the Content-Disposition header body
@@ -241,14 +246,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Content-Location header body</value>
 		public System.String ContentLocation {
-			get {
-				System.String tmp = this.getProperty("Content-Location");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Content-Location", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets the elements found in the Content-Location header body
@@ -265,7 +263,7 @@ namespace anmar.SharpMimeTools
 		/// <value>Content-Transfer-Encoding header body</value>
 		public System.String ContentTransferEncoding {
 			get {
-				System.String tmp = this.getProperty("Content-Transfer-Encoding");
+				System.String tmp = this.GetHeaderField("Content-Type", null, false, false);
 				if ( tmp!=null ) {
 					tmp = tmp.ToLower();
 				}
@@ -277,13 +275,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Content-Type header body</value>
 		public System.String ContentType {
-			get {
-				System.String tmp = this.getProperty("Content-Type");
-				if ( tmp==null ) {
-					tmp = "text/plain; charset=us-ascii";
-				}
-				return tmp;
-			}
+			get { return this.GetHeaderField("Content-Type", "text/plain; charset=us-ascii", false, false); }
 		}
 		/// <summary>
 		/// Gets the elements found in the Content-Type header body
@@ -299,14 +291,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Date header body</value>
 		public System.String Date {
-			get {
-				System.String tmp = this.getProperty("Date");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Date", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets <see cref="System.Text.Encoding"/> found on the headers and applies to the body
@@ -323,14 +308,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>From header body</value>
 		public System.String From {
-			get {
-				System.String tmp = this.getProperty("From");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("From", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets Raw headers
@@ -349,14 +327,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Message-ID header body</value>
 		public System.String MessageID {
-			get {
-				System.String tmp = this.getProperty("Message-ID");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Message-ID", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets reply address as defined by <c>rfc 2822</c>
@@ -375,54 +346,28 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Reply-To header body</value>
 		public System.String ReplyTo {
-			get {
-				System.String tmp = this.getProperty("Reply-To");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Reply-To", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets Return-Path header field
 		/// </summary>
 		/// <value>Return-Path header body</value>
 		public System.String ReturnPath {
-			get {
-				System.String tmp = this.getProperty("Return-Path");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Return-Path", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets Sender header field
 		/// </summary>
 		/// <value>Sender header body</value>
 		public System.String Sender {
-			get {
-				System.String tmp = this.getProperty("Sender");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Sender", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets Subject header field
 		/// </summary>
 		/// <value>Subject header body</value>
 		public System.String Subject {
-			get {
-				System.String tmp = this.getProperty("Subject");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				return tmp;
-			}
+			get { return this.GetHeaderField("Subject", System.String.Empty, false, false); }
 		}
 		/// <summary>
 		/// Gets SubType from Content-Type header field
@@ -439,14 +384,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>To header body</value>
 		public System.String To {
-			get {
-				System.String tmp = this.getProperty("To");
-				if ( tmp==null )
-					tmp = System.String.Empty;
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("To", System.String.Empty, true, false); }
 		}
 		/// <summary>
 		/// Gets top-level media type from Content-Type header field
@@ -463,14 +401,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Version header body</value>
 		public System.String Version {
-			get {
-				System.String tmp = this.getProperty("Version");
-				if ( tmp==null )
-					tmp = "1.0";
-				else
-					tmp = anmar.SharpMimeTools.SharpMimeTools.uncommentString ( tmp );
-				return tmp;
-			}
+			get { return this.GetHeaderField("Version", "1.0", true, false); }
 		}
 	}
 	/// <summary>

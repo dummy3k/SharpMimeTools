@@ -279,7 +279,7 @@ namespace anmar.SharpMimeTools
 			get {
 				this.parse();
 				if ( this.mi.parts.Count == 0 ) {
-					this.message.Enconding = this.mi.header.Encoding;
+					this.message.Encoding = this.mi.header.Encoding;
 					if ( this.mi.end ==-1 ) {
 						return this.message.ReadAll(this.mi.start_body);
 					} else {

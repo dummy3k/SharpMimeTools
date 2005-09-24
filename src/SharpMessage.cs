@@ -133,6 +133,18 @@ namespace anmar.SharpMimeTools
 		public System.Collections.IEnumerable To {
 			get { return this._to; }
 		}
+		/// <summary>
+		/// Returns the requested header field body.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <returns></returns>
+		/// <remarks>The value if present is uncommented and decoded (RFC 2047).<br />
+		/// If the requested field is not present in this instance, <see cref="System.String.Empty" /> is returned instead.</remarks>
+		public System.String GetHeaderField ( System.String name ) {
+			if ( this._headers==null )
+				return System.String.Empty;
+			return this._headers.GetHeaderField(name, System.String.Empty, true, true);
+		}
 
 		private void ParseMessage ( System.IO.Stream stream ) {
 			this._attachments = new System.Collections.ArrayList();

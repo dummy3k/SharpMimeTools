@@ -177,7 +177,7 @@ namespace anmar.SharpMimeTools
 			}
 			this._buf = null;
 		}
-		public System.Text.Encoding Enconding {
+		public System.Text.Encoding Encoding {
 			set {
 				if ( value != null && this.enc!=value ) {
 					this.enc = value;
