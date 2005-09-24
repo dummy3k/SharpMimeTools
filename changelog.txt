@@ -13,6 +13,9 @@
  - [SharpMessage] Forbidding attachments is now possible in the constructor.
  - [SharpMimeHeader] Fixed bug introduced in ContentTransferEncoding earlier today.
  - [SharpMessage] Added some log statements.
+ - [SharpMimeHeader] Added EncodingDefault property that allows setting the default encoding
+   used. This allows violating RFC 2045 defaults, but as some MS software doesn't care conforming
+   to this, there is the need to read their emails.
 
 09/11/2005
  - [SharpMimeMessageStream] Rewritten the ReadLine method to bypass the StreamReader

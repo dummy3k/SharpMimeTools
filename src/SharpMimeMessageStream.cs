@@ -40,12 +40,12 @@ namespace anmar.SharpMimeTools
 
 		public SharpMimeMessageStream ( System.IO.Stream stream ) {
 			this.stream = stream;
-			this.enc = new System.Text.ASCIIEncoding();
+			this.enc = anmar.SharpMimeTools.SharpMimeHeader.EncodingDefault;
 			sr = new System.IO.StreamReader ( this.stream, this.enc );
 		}
 		public SharpMimeMessageStream ( System.Byte[] buffer ) {
 			this.stream = new System.IO.MemoryStream(buffer);
-			this.enc = new System.Text.ASCIIEncoding();
+			this.enc = anmar.SharpMimeTools.SharpMimeHeader.EncodingDefault;
 			sr = new System.IO.StreamReader ( this.stream, this.enc );
 		}
 		public void Close(){
@@ -179,7 +179,7 @@ namespace anmar.SharpMimeTools
 		}
 		public System.Text.Encoding Encoding {
 			set {
-				if ( value != null && this.enc!=value ) {
+				if ( value!=null && this.enc.CodePage!=value.CodePage ) {
 					this.enc = value;
 					this.SeekPoint (this.Position);
 					sr = new System.IO.StreamReader ( this.stream, this.enc );

@@ -29,6 +29,7 @@ namespace anmar.SharpMimeTools
 	/// </summary>
 	public class SharpMimeHeader : System.Collections.IEnumerable {
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static System.Text.Encoding default_encoding = System.Text.Encoding.ASCII;
 		private anmar.SharpMimeTools.SharpMimeMessageStream message;
 		private System.Collections.Specialized.HybridDictionary headers;
 		private System.String _cached_headers = null;
@@ -53,12 +54,13 @@ namespace anmar.SharpMimeTools
 					this.subtype = this.contenttype["Content-Type"].Split('/')[1];
 					this.enc = anmar.SharpMimeTools.SharpMimeTools.parseCharSet ( this.contenttype["charset"] );
 				} catch (System.Exception) {
-					this.contenttype = anmar.SharpMimeTools.SharpMimeTools.parseHeaderFieldBody ( "Content-Type", "text/plain; charset=us-ascii" );
+					this.enc = anmar.SharpMimeTools.SharpMimeHeader.default_encoding;
+					this.contenttype = anmar.SharpMimeTools.SharpMimeTools.parseHeaderFieldBody ( "Content-Type", System.String.Concat("text/plain; charset=", this.enc.BodyName) );
 					this.TopLevelMediaType = anmar.SharpMimeTools.MimeTopLevelMediaType.text;
 					this.subtype = "plain";
 				}
 				if ( this.enc==null ) {
-					this.enc = new System.Text.ASCIIEncoding();
+					this.enc = anmar.SharpMimeTools.SharpMimeHeader.default_encoding;
 				}
 				// TODO: rework this
 				try {
@@ -179,7 +181,7 @@ namespace anmar.SharpMimeTools
 			}
 			System.String line = System.String.Empty;
 			this.message.SeekPoint ( this.startpoint );
-			this.message.Encoding = System.Text.ASCIIEncoding.ASCII;
+			this.message.Encoding = anmar.SharpMimeTools.SharpMimeHeader.default_encoding;
 			for ( line=this.message.ReadUnfoldedLine(); line!=null ; line=this.message.ReadUnfoldedLine() ) {
 				if ( line.Length == 0 ) {
 					this.endpoint = this.message.Position_preRead;
@@ -275,7 +277,7 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		/// <value>Content-Type header body</value>
 		public System.String ContentType {
-			get { return this.GetHeaderField("Content-Type", "text/plain; charset=us-ascii", false, false); }
+			get { return this.GetHeaderField("Content-Type", System.String.Concat("text/plain; charset=", this.mt.enc.BodyName), false, false); }
 		}
 		/// <summary>
 		/// Gets the elements found in the Content-Type header body
@@ -301,6 +303,21 @@ namespace anmar.SharpMimeTools
 			get {
 				this.parse();
 				return this.mt.enc;
+			}
+		}
+		/// <summary>
+		/// Gets or sets the default <see cref="System.Text.Encoding" /> used when it isn't defined otherwise.
+		/// </summary>
+		/// <value>The <see cref="System.Text.Encoding" /> used when it isn't defined otherwise</value>
+		/// <remarks>The default value is <see cref="System.Text.ASCIIEncoding" /> as defined in RFC 2045 section 5.2.<br />
+		/// If you change this value you'll be violating this rfc section.</remarks>
+		public static System.Text.Encoding EncodingDefault {
+			get {return default_encoding; }
+			set {
+				if ( value!=null && !value.BodyName.Equals(System.String.Empty) )
+					default_encoding=value;
+				else
+					default_encoding=System.Text.Encoding.ASCII;
 			}
 		}
 		/// <summary>
