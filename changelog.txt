@@ -1,3 +1,7 @@
+09/25/2005
+ - Updated readme.txt
+ - Released as version 0.3b [518]
+
 09/24/2005
  - [SharpMimeHeader] Removed the instance of the encoding used to read the headers. Use the 
    static one instead.
