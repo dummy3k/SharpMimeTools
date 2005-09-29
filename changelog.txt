@@ -1,3 +1,7 @@
+09/29/2005
+ - Version number set to 0.4
+ - Bugfix: rfc2047decode wasn't decoding properly multiple encoded-words in the same field.
+
 09/25/2005
  - Updated readme.txt
  - Released as version 0.3b [518]
