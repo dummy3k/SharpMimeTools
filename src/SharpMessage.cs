@@ -45,6 +45,7 @@ namespace anmar.SharpMimeTools
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		private System.Collections.ArrayList _attachments;
 		private System.String _body = System.String.Empty;
+		private bool _body_html = false;
 		private System.DateTime _date;
 		private System.String _from_addr = System.String.Empty;
 		private System.String _from_name = System.String.Empty;
@@ -69,11 +70,27 @@ namespace anmar.SharpMimeTools
 		/// <b>anmar.SharpMimeTools.MimeTopLevelMediaType.text</b>, <b>anmar.SharpMimeTools.MimeTopLevelMediaType.multipart</b> and <b>anmar.SharpMimeTools.MimeTopLevelMediaType.message</b> are allowed in any case.<br /><br />
 		/// In order to have better control over what is parsed, see the other contructors.
 		/// </remarks>
-		public SharpMessage( System.IO.Stream message, bool attachments, bool html ) {
+		public SharpMessage( System.IO.Stream message, bool attachments, bool html ) : this(message, attachments, html, null) {
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="attachments"><b>true</b> to allow attachments; <b>false</b> to skip them.</param>
+		/// <param name="html"><b>true</b> to allow HTML content; <b>false</b> to ignore the html content.</param>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
+		/// <remarks>When the <b>attachments</b> parameter is true it's equivalent to adding <b>anmar.SharpMimeTools.MimeTopLevelMediaType.application</b>, <b>anmar.SharpMimeTools.MimeTopLevelMediaType.audio</b>, <b>anmar.SharpMimeTools.MimeTopLevelMediaType.image</b>, <b>anmar.SharpMimeTools.MimeTopLevelMediaType.video</b> to the allowed <see cref="anmar.SharpMimeTools.MimeTopLevelMediaType" />.<br />
+		/// <b>anmar.SharpMimeTools.MimeTopLevelMediaType.text</b>, <b>anmar.SharpMimeTools.MimeTopLevelMediaType.multipart</b> and <b>anmar.SharpMimeTools.MimeTopLevelMediaType.message</b> are allowed in any case.<br /><br />
+		/// In order to have better control over what is parsed, see the other contructors.
+		/// </remarks>
+		public SharpMessage( System.IO.Stream message, bool attachments, bool html, System.String path ) {
 			anmar.SharpMimeTools.MimeTopLevelMediaType types = anmar.SharpMimeTools.MimeTopLevelMediaType.text|anmar.SharpMimeTools.MimeTopLevelMediaType.multipart|anmar.SharpMimeTools.MimeTopLevelMediaType.message;
 			if ( attachments )
 				types = types|anmar.SharpMimeTools.MimeTopLevelMediaType.application|anmar.SharpMimeTools.MimeTopLevelMediaType.audio|anmar.SharpMimeTools.MimeTopLevelMediaType.image|anmar.SharpMimeTools.MimeTopLevelMediaType.video;
-			this.ParseMessage(message, types, html);
+			if ( !System.IO.Directory.Exists(path) )
+				this.ParseMessage(message, types, html, null);
+			else
+				this.ParseMessage(message, types, html, path);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
@@ -82,7 +99,20 @@ namespace anmar.SharpMimeTools
 		/// <param name="types">A <see cref="anmar.SharpMimeTools.MimeTopLevelMediaType" /> value that specifies the allowed Mime-Types to being decoded.</param>
 		/// <param name="html"><b>true</b> to allow HTML content; <b>false</b> to ignore the html content.</param>
 		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html ) {
-			this.ParseMessage(message, types, html);
+			this.ParseMessage(message, types, html, null);
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="types">A <see cref="anmar.SharpMimeTools.MimeTopLevelMediaType" /> value that specifies the allowed Mime-Types to being decoded.</param>
+		/// <param name="html"><b>true</b> to allow HTML content; <b>false</b> to ignore the html content.</param>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
+		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path ) {
+			if ( !System.IO.Directory.Exists(path) )
+				this.ParseMessage(message, types, html, null);
+			else
+				this.ParseMessage(message, types, html, path);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.String" />.
@@ -133,6 +163,13 @@ namespace anmar.SharpMimeTools
 			get { return this._from_addr; }
 		}
 		/// <summary>
+		/// Gets a value indicating whether the body contains html content
+		/// </summary>
+		/// <value><b>true</b> if the body contains html content; otherwise, <b>false</b></value>
+		public bool HasHtmlBody {
+			get { return this._body_html; }
+		}
+		/// <summary>
 		/// <see cref="anmar.SharpMimeTools.SharpMimeHeader" /> instance for this message that contains the raw content of the headers.
 		/// </summary>
 		public anmar.SharpMimeTools.SharpMimeHeader Headers {
@@ -170,10 +207,10 @@ namespace anmar.SharpMimeTools
 			return this._headers.GetHeaderField(name, System.String.Empty, true, true);
 		}
 
-		private void ParseMessage ( System.IO.Stream stream, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html ) {
+		private void ParseMessage ( System.IO.Stream stream, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path ) {
 			this._attachments = new System.Collections.ArrayList();
 			anmar.SharpMimeTools.SharpMimeMessage message = new anmar.SharpMimeTools.SharpMimeMessage(stream);
-			this.ParseMessage(message, types, html);
+			this.ParseMessage(message, types, html, path);
 			this._headers = message.Header;
 			message.Close();
 			message = null;
@@ -204,7 +241,7 @@ namespace anmar.SharpMimeTools
 					this._from_name = item["address"];
 			}
 		}
-		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html ) {
+		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path ) {
 			if ( !(types&part.Header.TopLevelMediaType).Equals(part.Header.TopLevelMediaType) ) {
 				if ( log.IsDebugEnabled )
 					log.Debug (System.String.Concat("Mime-Type [", part.Header.TopLevelMediaType, "] is not an accepted Mime-Type. Skiping part."));
@@ -230,13 +267,13 @@ namespace anmar.SharpMimeTools
 										log.Debug (System.String.Concat("Mime-Type [", item.Header.TopLevelMediaType, "/", item.Header.SubType, "] is not an accepted Mime-Type. Skiping alternative part."));
 									continue;
 								}
-								this.ParseMessage(item, types, html);
+								this.ParseMessage(item, types, html, path);
 							}
 						}
 					// TODO: Take into account each subtype of "multipart"
 					} else if ( part.PartsCount>0 ) {
 						foreach ( anmar.SharpMimeTools.SharpMimeMessage item in part ) {
-							this.ParseMessage(item, types, html);
+							this.ParseMessage(item, types, html, path);
 						}
 					}
 					break;
@@ -244,9 +281,17 @@ namespace anmar.SharpMimeTools
 					if ( ( part.Disposition==null || !part.Disposition.Equals("attachment") )
 						&& ( part.Header.SubType.Equals("plain") || part.Header.SubType.Equals("html") ) ) {
 						// HTML content not allowed
-						if ( !html && part.Header.SubType.Equals("html") )
-							break;
-						this._body = System.String.Concat (this._body, part.BodyDecoded);
+						if ( part.Header.SubType.Equals("html") ) {
+							if ( !html )
+								break;
+							else
+								this._body_html=true;
+							
+						}
+						if ( this._body_html && part.Header.SubType.Equals("plain") ) {
+							this._body = System.String.Concat (this._body, "<pre>", part.BodyDecoded, "</pre>");
+						} else 
+							this._body = System.String.Concat (this._body, part.BodyDecoded);
 						break;
 					} else {
 						goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
@@ -255,12 +300,155 @@ namespace anmar.SharpMimeTools
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.audio:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.image:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.video:
-					System.IO.MemoryStream stream = new System.IO.MemoryStream();
-					part.DumpBody(stream);
-					this._attachments.Add(stream);
+					anmar.SharpMimeTools.SharpAttachment attachment = null;
+					// Save to a file
+					if ( path!=null ) {
+						System.IO.FileInfo file = part.DumpBody(path, true);
+						if ( file!=null ) {
+							attachment = new anmar.SharpMimeTools.SharpAttachment(file);
+							attachment.Name = file.Name;
+						}
+					// Save to a stream
+					} else {
+						System.IO.MemoryStream stream = new System.IO.MemoryStream();
+						if ( part.DumpBody(stream) ) {
+							attachment = new anmar.SharpMimeTools.SharpAttachment(stream);
+							if ( part.Name!=null )
+								attachment.Name = part.Name;
+							else
+								attachment.Name = System.String.Concat("generated_", part.GetHashCode(), ".", part.Header.SubType);
+						}
+						stream = null;
+					}
+					if ( attachment!=null )
+						this._attachments.Add(attachment);
 					break;
 				default:
 					break;
+			}
+		}
+	}
+	/// <summary>
+	/// This class provides the basic functionality for handling attachments
+	/// </summary>
+	public class SharpAttachment {
+		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private System.String _name;
+		private System.IO.MemoryStream _stream;
+		private System.IO.FileInfo _saved_file;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpAttachment" /> class based on the supplied <see cref="System.IO.MemoryStream" />.
+		/// </summary>
+		/// <param name="stream"><see cref="System.IO.MemoryStream" /> instance that contains the attachment content.</param>
+		public SharpAttachment ( System.IO.MemoryStream stream ) {
+			this._stream = stream;
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpAttachment" /> class based on the supplied <see cref="System.IO.FileInfo" />.
+		/// </summary>
+		/// <param name="file"><see cref="System.IO.MemoryStream" /> instance that contains the info about the attachment.</param>
+		public SharpAttachment ( System.IO.FileInfo file ) {
+			this._saved_file = file;
+		}
+		/// <summary>
+		/// Closes the underling stream if it's open.
+		/// </summary>
+		public void Close() {
+			if ( this._stream!=null && this._stream.CanRead )
+				this._stream.Close();
+			this._stream = null;
+		}
+		/// <summary>
+		/// Saves of the attachment to a file in the given path.
+		/// </summary>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachment.</param>
+		/// <param name="overwrite"><b>true</b> if the destination file can be overwritten; otherwise, <b>false</b>.</param>
+		/// <returns><see cref="System.IO.FileInfo" /> of the saved file. <b>null</b> when it fails to save.</returns>
+		/// <remarks>If the file was already saved, the previous <see cref="System.IO.FileInfo" /> is returned.<br />
+		/// Once the file is successfully saved, the stream is closed and <see cref="SavedFile" /> property is updated.</remarks>
+		public System.IO.FileInfo Save ( System.String path, bool overwrite ) {
+			if ( path==null || this._name==null )
+				return null;
+			if ( this._stream==null ) {
+				if ( this._saved_file!=null )
+					return this._saved_file;
+				else
+					return null;
+			}
+			if ( !this._stream.CanRead ) {
+				if ( log.IsErrorEnabled )
+					log.Error(System.String.Concat("The provided stream does not support reading."));
+				return null;
+			}
+			System.IO.FileInfo file = new System.IO.FileInfo (System.IO.Path.Combine (path, this._name));
+			if ( !file.Directory.Exists ) {
+				if ( log.IsErrorEnabled )
+					log.Error(System.String.Concat("Destination folder [", file.Directory.FullName, "] does not exist"));
+				return null;
+			}
+			if ( file.Exists ) {
+				if ( overwrite ) {
+					try {
+						file.Delete();
+					} catch ( System.Exception e ) {
+						if ( log.IsErrorEnabled )
+							log.Error(System.String.Concat("Error deleting existing file[", file.FullName, "]"), e);
+						return null;
+					}
+				} else {
+					if ( log.IsErrorEnabled )
+						log.Error(System.String.Concat("Destination file [", file.FullName, "] already exists"));
+					return null;
+				}
+			}
+			try {
+				System.IO.FileStream stream = file.OpenWrite();
+				this._stream.WriteTo(stream);
+				stream.Flush();
+				stream.Close();
+				this.Close();
+				this._saved_file = file;
+			} catch ( System.Exception e ) {
+				if ( log.IsErrorEnabled )
+						log.Error(System.String.Concat("Error writting file [", file.FullName, "]"), e);
+					return null;
+			}
+			return file;
+		}
+		/// <summary>
+		/// Gets or sets the name of the attachment.
+		/// </summary>
+		/// <value>The name of the attachment.</value>
+		public System.String Name {
+			get { return this._name; }
+			set {
+				if ( value!=null )
+					this._name = System.IO.Path.GetFileName(value);
+				else
+					this._name = null;
+			}
+		}
+		/// <summary>
+		/// Gets the <see cref="System.IO.FileInfo" /> of the saved file.
+		/// </summary>
+		/// <value>The <see cref="System.IO.FileInfo" /> of the saved file.</value>
+		public System.IO.FileInfo SavedFile {
+			get { return this._saved_file; }
+		}
+		/// <summary>
+		/// Gets the <see cref="System.IO.Stream " /> of the attachment.
+		/// </summary>
+		/// <value>The <see cref="System.IO.Stream " /> of the attachment.</value>
+		/// <remarks>If the underling stream exists, it's returned. If the file has been saved, it opens <see cref="SavedFile" /> for reading.</remarks>
+		public System.IO.Stream Stream {
+			get {
+				if ( this._stream!=null )
+					return this._stream;
+				else if ( this._saved_file!=null )
+					return this._saved_file.OpenRead();
+				else
+					return null;
 			}
 		}
 	}

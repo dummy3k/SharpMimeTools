@@ -1,3 +1,15 @@
+10/15/2005
+ - [SharpMessage] Added HasHtmlBody property.
+ - [SharpAttachment] Initial implementation. It contains the relevant information about an
+   attachment.
+ - [SharpMessage] Changed de content of Attachments property from a collection of MemoryStream
+   objects to SharpAttachment instances.
+ - [SharpMessage] It is now possible to automatically save attachments to a given location.
+   The SharpAttachment instances will contain the info about the saved files.
+ - [SharpMessage] Added new constructors to allow the above.
+ - [SharpMessage] When there is more than one text part, and there is html content, the plain ones
+   are enclosed in <pre> elements.
+
 09/29/2005
  - Version number set to 0.4
  - Bugfix: rfc2047decode wasn't decoding properly multiple encoded-words in the same field.
