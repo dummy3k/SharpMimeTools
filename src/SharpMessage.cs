@@ -124,7 +124,7 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// <see cref="System.Collections.ICollection" /> that contains the attachments found in this message.
 		/// </summary>
-		/// <remarks>Each attachment is a <see cref="System.IO.MemoryStream" /> instance.</remarks>
+		/// <remarks>Each attachment is a <see cref="SharpAttachment" /> instance.</remarks>
 		public System.Collections.ICollection Attachments {
 			get { return this._attachments; }
 		}

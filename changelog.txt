@@ -1,6 +1,8 @@
 10/19/2005
  - [SF BUG - 1331793] parseHeaderFieldBody didn't handle properly spaces between parameter name
    and parameter value.
+ - Update SharpMessage.Attachments documentation.
+ - Released as version 0.4b [560]
 
 10/15/2005
  - [SharpMessage] Added HasHtmlBody property.
