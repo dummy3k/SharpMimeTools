@@ -1,3 +1,7 @@
+10/19/2005
+ - [SF BUG - 1331793] parseHeaderFieldBody didn't handle properly spaces between parameter name
+   and parameter value.
+
 10/15/2005
  - [SharpMessage] Added HasHtmlBody property.
  - [SharpAttachment] Initial implementation. It contains the relevant information about an

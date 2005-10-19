@@ -129,6 +129,7 @@ namespace anmar.SharpMimeTools
 		public static System.Collections.Specialized.StringDictionary parseHeaderFieldBody ( System.String field, System.String fieldbody ) {
 			if ( fieldbody==null )
 				return null;
+			// FIXME: rewrite parseHeaderFieldBody to being regexp based.
 			fieldbody = anmar.SharpMimeTools.SharpMimeTools.uncommentString (fieldbody);
 			System.Collections.Specialized.StringDictionary fieldbodycol = new System.Collections.Specialized.StringDictionary ();
 			System.String[] words = fieldbody.Split(new Char[]{';'});
@@ -137,6 +138,8 @@ namespace anmar.SharpMimeTools
 				for (int i=1; i<words.Length; i++ ) {
 					System.String[] param = words[i].Trim(new Char[]{' ', '\t'}).Split(new Char[]{'='}, 2);
 					if ( param.Length==2 ) {
+						param[0] = param[0].Trim(new Char[]{' ', '\t'});
+						param[1] = param[1].Trim(new Char[]{' ', '\t'});
 						if ( param[1].StartsWith("\"") && !param[1].EndsWith("\"")) {
 							do {
 								param[1] += ";" + words[++i];
