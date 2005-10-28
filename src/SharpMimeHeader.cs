@@ -429,30 +429,30 @@ namespace anmar.SharpMimeTools
 		/// <summary>
 		/// RFC 2046 section 4.1
 		/// </summary>
-		text = 0,
+		text = 1,
 		/// <summary>
 		/// RFC 2046 section 4.2
 		/// </summary>
-		image = 1,
+		image = 2,
 		/// <summary>
 		/// RFC 2046 section 4.3
 		/// </summary>
-		audio = 2,
+		audio = 4,
 		/// <summary>
 		/// RFC 2046 section 4.4
 		/// </summary>
-		video = 4,
+		video = 8,
 		/// <summary>
 		/// RFC 2046 section 4.5
 		/// </summary>
-		application = 8,
+		application = 16,
 		/// <summary>
 		/// RFC 2046 section 5.1
 		/// </summary>
-		multipart = 16,
+		multipart = 32,
 		/// <summary>
 		/// RFC 2046 section 5.2
 		/// </summary>
-		message = 32
+		message = 64
 	}
 }
