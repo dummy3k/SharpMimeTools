@@ -242,7 +242,7 @@ namespace anmar.SharpMimeTools
 			}
 		}
 		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path ) {
-			if ( !(types&part.Header.TopLevelMediaType).Equals(part.Header.TopLevelMediaType) ) {
+			if ( (types&part.Header.TopLevelMediaType)!=part.Header.TopLevelMediaType ) {
 				if ( log.IsDebugEnabled )
 					log.Debug (System.String.Concat("Mime-Type [", part.Header.TopLevelMediaType, "] is not an accepted Mime-Type. Skiping part."));
 				return;
@@ -260,7 +260,7 @@ namespace anmar.SharpMimeTools
 							// Get the first mime part of the alternatives that has a accepted Mime-Type
 							for ( int i=part.PartsCount; i>0; i-- ) {
 								anmar.SharpMimeTools.SharpMimeMessage item = part.GetPart(i-1);
-								if ( !(types&item.Header.TopLevelMediaType).Equals(item.Header.TopLevelMediaType) 
+								if ( (types&part.Header.TopLevelMediaType)!=part.Header.TopLevelMediaType
 								    || ( !html && item.Header.TopLevelMediaType.Equals(anmar.SharpMimeTools.MimeTopLevelMediaType.text) && item.Header.SubType.Equals("html") )
 								   ) {
 									if ( log.IsDebugEnabled )
@@ -293,10 +293,15 @@ namespace anmar.SharpMimeTools
 							this._body = System.String.Concat (this._body, "<pre>", part.BodyDecoded, "</pre>");
 						} else 
 							this._body = System.String.Concat (this._body, part.BodyDecoded);
-						break;
 					} else {
+						if ( (types&anmar.SharpMimeTools.MimeTopLevelMediaType.application)!=anmar.SharpMimeTools.MimeTopLevelMediaType.application ) {
+							if ( log.IsDebugEnabled )
+								log.Debug (System.String.Concat("Mime-Type [", anmar.SharpMimeTools.MimeTopLevelMediaType.application, "] is not an accepted Mime-Type. Skiping part."));
+							return;
+						}
 						goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
 					}
+					break;
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.application:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.audio:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.image:

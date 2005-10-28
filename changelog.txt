@@ -2,6 +2,8 @@
  - Version number set to 0.5
  - [SharpMessage] Bugfix: when there were multiple alternative parts, all of them were used.
  - [SharpMimeHeader] MimeTopLevelMediaType values didn't allow bitwise operations.
+ - [SharpMessage] When a text part is dumped as an attachment, the mime-type check must be performed
+   as if it were a application part.
 
 10/19/2005
  - [SF BUG - 1331793] parseHeaderFieldBody didn't handle properly spaces between parameter name
