@@ -79,6 +79,8 @@ namespace anmar.SharpMimeTools
 		/// <param name="stream"><see cref="System.IO.Stream" /> where we want to write the body</param>
 		/// <returns><b>true</b> OK;<b>false</b> if write operation fails</returns>
 		public bool DumpBody ( System.IO.Stream stream ) {
+			if ( stream==null )
+				return false;
 			bool error = false;
 			if ( stream.CanWrite ) {
 				System.Byte[] buffer = null;
@@ -159,8 +161,14 @@ namespace anmar.SharpMimeTools
 				try {
 					System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo ( path );
 					dir.Create();
-					file = new System.IO.FileInfo (System.IO.Path.Combine (path, name) );
-					if ( dir.Exists ) {
+					try {
+						file = new System.IO.FileInfo (System.IO.Path.Combine (path, name) );
+					} catch ( System.ArgumentException ) {
+						file = null;
+						if ( log.IsErrorEnabled )
+							log.Error(System.String.Concat("Filename [", System.IO.Path.Combine (path, name), "] is not allowed by the filesystem"));
+					}
+					if ( file!=null && dir.Exists ) {
 						if ( dir.FullName.Equals (new System.IO.DirectoryInfo (file.Directory.FullName).FullName) ) {
 							if ( !file.Exists ) {
 								if ( log.IsDebugEnabled )
@@ -171,13 +179,22 @@ namespace anmar.SharpMimeTools
 									file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
 								if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
 									file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
-								System.IO.Stream stream = file.Create();
+								System.IO.Stream stream = null;
+								try {
+									stream = file.Create();
+								} catch ( System.Exception e ) {
+									if ( log.IsErrorEnabled )
+										log.Error(System.String.Concat("Error creating file [", file.FullName, "]"), e);
+								}
 								bool error = !this.DumpBody (stream);
-								stream.Close();
+								if ( stream!=null )
+									stream.Close();
+								stream = null;
 								if ( error ) {
 									if ( log.IsErrorEnabled )
 										log.Error (System.String.Concat("Error writting file [", file.FullName, "] to disk"));
-									file.Delete();
+									if ( stream!=null )
+										file.Delete();
 								} else {
 									if ( log.IsDebugEnabled )
 										log.Debug (System.String.Concat("Attachment saved [", file.FullName, "]"));
@@ -188,7 +205,7 @@ namespace anmar.SharpMimeTools
 								log.Debug("File already exists, skipping.");
 						} else if ( log.IsDebugEnabled )
 							log.Debug(System.String.Concat ("Folder name mistmatch. [", dir.FullName, "]<>[", new System.IO.DirectoryInfo (file.Directory.FullName).FullName, "]"));
-					} else if ( log.IsErrorEnabled )
+					} else if ( file!=null && log.IsErrorEnabled )
 						log.Error ("Destination folder does not exists.");
 					dir = null;
 				} catch ( System.Exception e ) {
@@ -409,6 +426,15 @@ namespace anmar.SharpMimeTools
 							param = param.Replace ( ichar.ToString(), System.String.Empty );
 						}
 						param = System.IO.Path.GetFileName(param);
+					}
+					try {
+						System.IO.FileInfo fi = new System.IO.FileInfo(param);
+						fi = null;
+					} catch ( System.ArgumentException ) {
+						param = null;
+						if ( log.IsErrorEnabled ) {
+							log.Error(System.String.Concat("Filename [", param, "] is not allowed by the filesystem"));
+						}
 					}
 				}
 				return param;

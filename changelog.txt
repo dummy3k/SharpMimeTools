@@ -4,6 +4,9 @@
  - [SharpMimeHeader] MimeTopLevelMediaType values didn't allow bitwise operations.
  - [SharpMessage] When a text part is dumped as an attachment, the mime-type check must be performed
    as if it were a application part.
+ - [SharpMimeMessage] The content of Name property must be allowed by the constructor of FileInfo
+   for later use, so now it's tested beforehand and if it fails, return a null value.
+ - [SharpMimeMessage] DumpBody now handles properly the failure to create the file.
 
 10/19/2005
  - [SF BUG - 1331793] parseHeaderFieldBody didn't handle properly spaces between parameter name
