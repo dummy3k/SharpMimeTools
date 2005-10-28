@@ -268,6 +268,7 @@ namespace anmar.SharpMimeTools
 									continue;
 								}
 								this.ParseMessage(item, types, html, path);
+								break;
 							}
 						}
 					// TODO: Take into account each subtype of "multipart"

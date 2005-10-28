@@ -1,3 +1,7 @@
+10/28/2005
+ - Version number set to 0.5
+ - [SharpMessage] Bugfix: when there were multiple alternative parts, all of them were used.
+
 10/19/2005
  - [SF BUG - 1331793] parseHeaderFieldBody didn't handle properly spaces between parameter name
    and parameter value.
