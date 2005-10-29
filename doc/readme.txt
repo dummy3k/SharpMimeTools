@@ -39,6 +39,7 @@ Licence
 History
 --------------------------------
 
+10/29/2005 - version 0.5b   - Released milestone 0.5
 10/19/2005 - version 0.4b   - Released milestone 0.4
 09/25/2005 - version 0.3b   - Released milestone 0.3
 07/16/2005 - version 0.2b   - Released milestone 0.2
