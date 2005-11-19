@@ -281,16 +281,19 @@ namespace anmar.SharpMimeTools
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.text:
 					if ( ( part.Disposition==null || !part.Disposition.Equals("attachment") )
 						&& ( part.Header.SubType.Equals("plain") || part.Header.SubType.Equals("html") ) ) {
+						bool body_was_html = this._body_html;
 						// HTML content not allowed
 						if ( part.Header.SubType.Equals("html") ) {
 							if ( !html )
 								break;
 							else
 								this._body_html=true;
-							
+						}
+						if ( this._body_html && !body_was_html && this._body.Length>0 ) {
+							this._body = System.String.Concat ("<pre>", System.Web.HttpUtility.HtmlEncode(this._body), "</pre>");
 						}
 						if ( this._body_html && part.Header.SubType.Equals("plain") ) {
-							this._body = System.String.Concat (this._body, "<pre>", part.BodyDecoded, "</pre>");
+							this._body = System.String.Concat (this._body, "<pre>", System.Web.HttpUtility.HtmlEncode(part.BodyDecoded), "</pre>");
 						} else 
 							this._body = System.String.Concat (this._body, part.BodyDecoded);
 					} else {
@@ -326,8 +329,11 @@ namespace anmar.SharpMimeTools
 						}
 						stream = null;
 					}
-					if ( attachment!=null )
+					if ( attachment!=null ) {
+						attachment.MimeTopLevelMediaType = part.Header.TopLevelMediaType;
+						attachment.MimeMediaSubType = part.Header.SubType;
 						this._attachments.Add(attachment);
+					}
 					break;
 				default:
 					break;
@@ -342,6 +348,8 @@ namespace anmar.SharpMimeTools
 		private System.String _name;
 		private System.IO.MemoryStream _stream;
 		private System.IO.FileInfo _saved_file;
+		private System.String _sub_type;
+		private anmar.SharpMimeTools.MimeTopLevelMediaType _top_level_media_type;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpAttachment" /> class based on the supplied <see cref="System.IO.MemoryStream" />.
@@ -436,6 +444,23 @@ namespace anmar.SharpMimeTools
 			}
 		}
 		/// <summary>
+		/// Gets or sets top-level media type for this <see cref="SharpAttachment" /> instance
+		/// </summary>
+		/// <value>Top-level media type from Content-Type header field of this <see cref="SharpAttachment" /> instance</value>
+		public System.String MimeMediaSubType {
+			get { return this._sub_type; }
+			set { this._sub_type = value; }
+		}
+		/// <summary>
+		/// Gets or sets SubType for this <see cref="SharpAttachment" /> instance
+		/// </summary>
+		/// <value>SubType from Content-Type header field of this <see cref="SharpAttachment" /> instance</value>
+		public anmar.SharpMimeTools.MimeTopLevelMediaType MimeTopLevelMediaType {
+			get { return this._top_level_media_type; }
+			set { this._top_level_media_type = value; }
+		}
+
+		/// <summary>
 		/// Gets the <see cref="System.IO.FileInfo" /> of the saved file.
 		/// </summary>
 		/// <value>The <see cref="System.IO.FileInfo" /> of the saved file.</value>
@@ -457,5 +482,5 @@ namespace anmar.SharpMimeTools
 					return null;
 			}
 		}
-	}
+}
 }
