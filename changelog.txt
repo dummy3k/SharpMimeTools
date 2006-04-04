@@ -1,5 +1,7 @@
 04/04/2006
  - Updated copyright notice.
+ - Replaced #Develop 1.x project files with 2.x ones.
+ - Added MonoDevelop project files.
 
 11/19/2005
  - Version number set to 0.6
