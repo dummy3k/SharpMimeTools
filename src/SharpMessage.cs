@@ -1,6 +1,6 @@
 // -----------------------------------------------------------------------
 //
-//   Copyright (C) 2003-2005 Angel Marin
+//   Copyright (C) 2003-2006 Angel Marin
 // 
 //   This file is part of SharpMimeTools
 //

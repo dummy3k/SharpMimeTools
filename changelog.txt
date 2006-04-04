@@ -1,3 +1,6 @@
+04/04/2006
+ - Updated copyright notice.
+
 11/19/2005
  - Version number set to 0.6
  - [SharpMessage] When there is a text/plain part before the first html part, the previous plain ones
