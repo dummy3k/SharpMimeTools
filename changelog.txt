@@ -1,3 +1,6 @@
+04/06/2006
+ - Updated MonoDevelop project to 0.10 release.
+
 04/04/2006
  - Updated copyright notice.
  - Replaced #Develop 1.x project files with 2.x ones.

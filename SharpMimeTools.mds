@@ -1,16 +1,16 @@
 <Combine name="SharpMimeTools" fileversion="2.0">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="SharpMimeTools" />
+      <Entry build="True" name="SharpMimeTools" configuration="Release" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="SharpMimeTools" />
+      <Entry build="True" name="SharpMimeTools" configuration="Release" />
     </Configuration>
     <Configuration name="ReleaseMono" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="SharpMimeTools" />
+      <Entry build="True" name="SharpMimeTools" configuration="Release" />
     </Configuration>
     <Configuration name="DebugMono" ctype="CombineConfiguration">
-      <Entry configuration="Release" build="True" name="SharpMimeTools" />
+      <Entry build="True" name="SharpMimeTools" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="SharpMimeTools" single="True">
