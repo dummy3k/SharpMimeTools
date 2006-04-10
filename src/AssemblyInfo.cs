@@ -16,7 +16,7 @@
 //
 //   You should have received a copy of the GNU Lesser General Public
 //   License along with SharpMimeTools; if not, write to the Free Software
-//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // -----------------------------------------------------------------------
 
@@ -28,12 +28,12 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("anmar.eu.org")]
 [assembly: AssemblyProduct("SharpMimeTools")]
-[assembly: AssemblyCopyright("Copyright 2003-2006 Angel Marin; GPLv2 or later")]
-[assembly: AssemblyTrademark("This program is under GPL v2 or later")]
+[assembly: AssemblyCopyright("Copyright 2003-2006 Angel Marin; LGPLv2.1 or later")]
+[assembly: AssemblyTrademark("This program is under LGPL v2.1 or later")]
 [assembly: AssemblyCulture("")]		
 
 [assembly: AssemblyVersion("0.6.*")]
 
 [assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile(@"../SharpMimeTools.snk")]
+[assembly: AssemblyKeyFile(@"SharpMimeTools.snk")]
 [assembly: AssemblyKeyName("")]

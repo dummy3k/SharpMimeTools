@@ -4,6 +4,9 @@
  - [nant] Added release-log target which is equivalent to the old release target.
  - [nant] Remove documentation build from release target.
  - [nant] Added release-doc target which calls release before building the documentation.
+ - Fixed the fsf address on all .cs files.
+ - Fixed the license name and version in AssemblyInfo.cs.
+ - Fixed the key path in AssemblyInfo.cs.
 
 04/06/2006
  - Updated MonoDevelop project to 0.10 release.
