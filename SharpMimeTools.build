@@ -27,14 +27,15 @@
 		<csc target="library" define="${build.defines}" warnaserror="false" debug="${build.debug}" output="${build.dir}/${project.name}.dll" doc="${build.dir}/../${project.name}.xml">
 			<sources failonempty="true" refid="source" />
 			<references>
-				<include name="${build.ref.platform}/log4net.dll" />
+				<include name="System.Web.dll" />
+				<include name="${build.ref.platform}/log4net.dll" if="${string::index-of(build.defines, ',LOG,')!=-1}" />
 			</references>
 		</csc>
 	</target>
 	<target name="debug" description="Debug build">
 		<property name="build.debug" value="true" />
 		<property name="build.config" value="debug" />
-		<property name="build.defines" value="DEBUG" />
+		<property name="build.defines" value="DEBUG,LOG" />
 		<call target="build" />
 	</target>
 	<target name="release" description="Release build">
@@ -43,6 +44,12 @@
 		<property name="build.defines" value="RELEASE" />
 		<call target="build" />
 		<call target="build-doc" />
+	</target>
+	<target name="release-log" description="Release build (with logging compiled)">
+		<property name="build.debug" value="false" />
+		<property name="build.config" value="release-log" />
+		<property name="build.defines" value="RELEASE,LOG" />
+		<call target="build" />
 	</target>
 	<target name="build-pre">
 		<call target="set-folders" />

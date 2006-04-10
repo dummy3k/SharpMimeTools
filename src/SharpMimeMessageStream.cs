@@ -27,7 +27,9 @@ namespace anmar.SharpMimeTools
 	/// <summary>
 	/// </summary>
 	internal class SharpMimeMessageStream {
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		protected System.IO.Stream stream;
 		private System.IO.StreamReader sr;
 		private System.Text.Encoding enc;
@@ -169,7 +171,9 @@ namespace anmar.SharpMimeTools
 		}
 		public void SeekPoint ( long point ) {
 			if ( this.sr.BaseStream.CanSeek && this.sr.BaseStream.Seek (point, System.IO.SeekOrigin.Begin) != point ) {
+#if LOG
 				if ( log.IsErrorEnabled) log.Error ("Error while seeking");
+#endif
 				throw new System.IO.IOException ();
 			} else {
 				this.sr.DiscardBufferedData();

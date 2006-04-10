@@ -28,7 +28,9 @@ namespace anmar.SharpMimeTools
 	/// rfc 2822 header of a rfc 2045 entity
 	/// </summary>
 	public class SharpMimeHeader : System.Collections.IEnumerable {
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		private static System.Text.Encoding default_encoding = System.Text.Encoding.ASCII;
 		private anmar.SharpMimeTools.SharpMimeMessageStream message;
 		private System.Collections.Specialized.HybridDictionary headers;
@@ -85,7 +87,9 @@ namespace anmar.SharpMimeTools
 				System.String line = this.message.ReadLine();
 				// Perhaps there is part of the POP3 response
 				if ( line!=null && line.StartsWith ("+OK") ) {
+#if LOG
 					if ( log.IsDebugEnabled ) log.Debug ("+OK present at top of the message");
+#endif
 					this.startpoint = this.message.Position;
 				} else this.message.ReadLine_Undo(line);
 			}

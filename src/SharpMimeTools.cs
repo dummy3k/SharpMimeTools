@@ -28,7 +28,9 @@ namespace anmar.SharpMimeTools
 	/// 
 	/// </summary>
 	public class SharpMimeTools {
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		private static System.String[] _date_formats = new System.String[] {
 																@"dddd, d MMM yyyy H:m:s zzz", @"ddd, d MMM yyyy H:m:s zzz", @"d MMM yyyy H:m:s zzz",
 																@"dddd, d MMM yy H:m:s zzz", @"ddd, d MMM yy H:m:s zzz", @"d MMM yy H:m:s zzz",
@@ -113,10 +115,14 @@ namespace anmar.SharpMimeTools
 					_date_formats,
 					System.Globalization.CultureInfo.CreateSpecificCulture("en-us"),
 					System.Globalization.DateTimeStyles.AllowInnerWhite);
+#if LOG
 			} catch ( System.Exception e ) {
-				msgDateTime = new System.DateTime (0);
 				if ( log.IsErrorEnabled )
 					log.Error(System.String.Concat("Error parsing date: [", date, "]"), e);
+#else
+			} catch ( System.Exception ) {
+#endif
+				msgDateTime = new System.DateTime (0);
 			}
 			return msgDateTime;
 		}
@@ -228,17 +234,20 @@ namespace anmar.SharpMimeTools
 			System.Text.RegularExpressions.Regex rfc2047format = new System.Text.RegularExpressions.Regex (@"(=\?[\-a-zA-Z0-9]+\?[qQbB]\?[a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^]+\?=)\s*", System.Text.RegularExpressions.RegexOptions.ECMAScript);
 			// No rfc2047 format
 			if ( !rfc2047format.IsMatch (word) ){
+#if LOG
 				if ( log.IsDebugEnabled )
 					log.Debug ("Not a RFC 2047 string: " + word);
+#endif
 				return word;
 			}
+#if LOG
 			if ( log.IsDebugEnabled )
 				log.Debug ("Decoding 2047 string: " + word);
+#endif
 			words = rfc2047format.Split ( word );
 			word = System.String.Empty;
 			rfc2047format = new System.Text.RegularExpressions.Regex (@"=\?([\-a-zA-Z0-9]+)\?([qQbB])\?([a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^]+)\?=", System.Text.RegularExpressions.RegexOptions.ECMAScript);
 			for ( int i=0; i<words.GetLength (0); i++ ) {
-				log.Info(words[i]);
 				if ( !rfc2047format.IsMatch (words[i]) ){
 					word += words[i];
 					continue;
@@ -261,8 +270,10 @@ namespace anmar.SharpMimeTools
 						break;
 				}
 			}
+#if LOG
 			if ( log.IsDebugEnabled )
 				log.Debug ("Decoded 2047 string: " + word);
+#endif
 			return word;
 		}
 		/// <summary>

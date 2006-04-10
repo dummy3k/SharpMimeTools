@@ -42,7 +42,9 @@ namespace anmar.SharpMimeTools
 	/// </code>
 	/// </example>
 	public sealed class SharpMessage {
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		private System.Collections.ArrayList _attachments;
 		private System.String _body = System.String.Empty;
 		private bool _body_html = false;
@@ -266,8 +268,10 @@ namespace anmar.SharpMimeTools
 		}
 		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String preferredtextsubtype, System.String path ) {
 			if ( (types&part.Header.TopLevelMediaType)!=part.Header.TopLevelMediaType ) {
+#if LOG
 				if ( log.IsDebugEnabled )
 					log.Debug (System.String.Concat("Mime-Type [", part.Header.TopLevelMediaType, "] is not an accepted Mime-Type. Skiping part."));
+#endif
 				return;
 			}
 			switch ( part.Header.TopLevelMediaType ) {
@@ -287,8 +291,10 @@ namespace anmar.SharpMimeTools
 								if ( (types&part.Header.TopLevelMediaType)!=part.Header.TopLevelMediaType
 								    || ( !html && item.Header.TopLevelMediaType.Equals(anmar.SharpMimeTools.MimeTopLevelMediaType.text) && item.Header.SubType.Equals("html") )
 								   ) {
-									if ( log.IsDebugEnabled )
-										log.Debug (System.String.Concat("Mime-Type [", item.Header.TopLevelMediaType, "/", item.Header.SubType, "] is not an accepted Mime-Type. Skiping alternative part."));
+#if LOG
+								   	if ( log.IsDebugEnabled )
+								   		log.Debug (System.String.Concat("Mime-Type [", item.Header.TopLevelMediaType, "/", item.Header.SubType, "] is not an accepted Mime-Type. Skiping alternative part."));
+#endif
 									continue;
 								}
 								// First allowed one.
@@ -335,8 +341,10 @@ namespace anmar.SharpMimeTools
 							this._body = System.String.Concat (this._body, part.BodyDecoded);
 					} else {
 						if ( (types&anmar.SharpMimeTools.MimeTopLevelMediaType.application)!=anmar.SharpMimeTools.MimeTopLevelMediaType.application ) {
+#if LOG
 							if ( log.IsDebugEnabled )
 								log.Debug (System.String.Concat("Mime-Type [", anmar.SharpMimeTools.MimeTopLevelMediaType.application, "] is not an accepted Mime-Type. Skiping part."));
+#endif
 							return;
 						}
 						goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
@@ -381,7 +389,9 @@ namespace anmar.SharpMimeTools
 	/// This class provides the basic functionality for handling attachments
 	/// </summary>
 	public class SharpAttachment {
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		private System.String _name;
 		private System.IO.MemoryStream _stream;
 		private System.IO.FileInfo _saved_file;
@@ -428,28 +438,38 @@ namespace anmar.SharpMimeTools
 					return null;
 			}
 			if ( !this._stream.CanRead ) {
+#if LOG
 				if ( log.IsErrorEnabled )
 					log.Error(System.String.Concat("The provided stream does not support reading."));
+#endif
 				return null;
 			}
 			System.IO.FileInfo file = new System.IO.FileInfo (System.IO.Path.Combine (path, this._name));
 			if ( !file.Directory.Exists ) {
+#if LOG
 				if ( log.IsErrorEnabled )
 					log.Error(System.String.Concat("Destination folder [", file.Directory.FullName, "] does not exist"));
+#endif
 				return null;
 			}
 			if ( file.Exists ) {
 				if ( overwrite ) {
 					try {
 						file.Delete();
+#if LOG						
 					} catch ( System.Exception e ) {
 						if ( log.IsErrorEnabled )
 							log.Error(System.String.Concat("Error deleting existing file[", file.FullName, "]"), e);
+#else
+					} catch ( System.Exception ) {
+#endif
 						return null;
 					}
 				} else {
+#if LOG
 					if ( log.IsErrorEnabled )
 						log.Error(System.String.Concat("Destination file [", file.FullName, "] already exists"));
+#endif
 					return null;
 				}
 			}
@@ -460,10 +480,14 @@ namespace anmar.SharpMimeTools
 				stream.Close();
 				this.Close();
 				this._saved_file = file;
+#if LOG
 			} catch ( System.Exception e ) {
 				if ( log.IsErrorEnabled )
-						log.Error(System.String.Concat("Error writting file [", file.FullName, "]"), e);
-					return null;
+					log.Error(System.String.Concat("Error writting file [", file.FullName, "]"), e);
+#else
+			} catch ( System.Exception ) {
+#endif
+				return null;
 			}
 			return file;
 		}

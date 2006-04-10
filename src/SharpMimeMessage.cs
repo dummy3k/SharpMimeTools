@@ -43,7 +43,9 @@ namespace anmar.SharpMimeTools
 				parts = new anmar.SharpMimeTools.SharpMimeMessageCollection();
 			}
 		}
+#if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+#endif
 		private anmar.SharpMimeTools.SharpMimeMessageStream message;
 		private MessageInfo mi;
 
@@ -91,10 +93,14 @@ namespace anmar.SharpMimeTools
 					case "base64":
 						try {
 							buffer = System.Convert.FromBase64String(this.Body);
+#if LOG
 						} catch ( System.Exception e ) {
-							error = true;
 							if ( log.IsErrorEnabled )
 								log.Error("Error Converting base64 string", e);
+#else
+						} catch ( System.Exception ) {
+#endif
+							error = true;
 						}
 						break;
 					case "7bit":
@@ -104,23 +110,32 @@ namespace anmar.SharpMimeTools
 						buffer = System.Text.Encoding.ASCII.GetBytes(this.Body);
 						break;
 					default:
+#if LOG
 						if ( log.IsErrorEnabled )
 							log.Error(System.String.Concat("Unsuported Content-Transfer-Encoding [", this.Header.ContentTransferEncoding, "]"));
+#endif
 						error=true;
 						break;
 				}
 				try {
 					if ( !error && buffer!=null )
 						stream.Write ( buffer, 0, buffer.Length );
+#if LOG
 				} catch ( System.Exception e ) {
-					error = true;
+
 					if ( log.IsErrorEnabled )
 						log.Error("Error dumping body", e);
+#else
+				} catch ( System.Exception ) {
+#endif
+					error = true;
 				}
 				buffer = null;
 			} else {
+#if LOG
 				if ( log.IsErrorEnabled )
 					log.Error("Can't write to stream");
+#endif
 				error = true;
 			}
 			return !error;
@@ -154,8 +169,10 @@ namespace anmar.SharpMimeTools
 		public System.IO.FileInfo DumpBody ( System.String path, System.String name ) {
 			System.IO.FileInfo file = null;
 			if ( name!=null ) {
+#if LOG
 				if ( log.IsDebugEnabled )
 					log.Debug ("Found attachment: " + name);
+#endif
 				name = System.IO.Path.GetFileName(name);
 				// Dump file contents
 				try {
@@ -165,14 +182,18 @@ namespace anmar.SharpMimeTools
 						file = new System.IO.FileInfo (System.IO.Path.Combine (path, name) );
 					} catch ( System.ArgumentException ) {
 						file = null;
+#if LOG
 						if ( log.IsErrorEnabled )
 							log.Error(System.String.Concat("Filename [", System.IO.Path.Combine (path, name), "] is not allowed by the filesystem"));
+#endif
 					}
 					if ( file!=null && dir.Exists ) {
 						if ( dir.FullName.Equals (new System.IO.DirectoryInfo (file.Directory.FullName).FullName) ) {
 							if ( !file.Exists ) {
+#if LOG
 								if ( log.IsDebugEnabled )
 									log.Debug (System.String.Concat("Saving attachment [", file.FullName, "] ..."));
+#endif
 								if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
 									file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
 								if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
@@ -182,35 +203,56 @@ namespace anmar.SharpMimeTools
 								System.IO.Stream stream = null;
 								try {
 									stream = file.Create();
+#if LOG	
 								} catch ( System.Exception e ) {
 									if ( log.IsErrorEnabled )
 										log.Error(System.String.Concat("Error creating file [", file.FullName, "]"), e);
+#else
+								} catch ( System.Exception ) {
+#endif
 								}
 								bool error = !this.DumpBody (stream);
 								if ( stream!=null )
 									stream.Close();
 								stream = null;
 								if ( error ) {
+#if LOG
 									if ( log.IsErrorEnabled )
 										log.Error (System.String.Concat("Error writting file [", file.FullName, "] to disk"));
+#endif
 									if ( stream!=null )
 										file.Delete();
 								} else {
+#if LOG
 									if ( log.IsDebugEnabled )
 										log.Debug (System.String.Concat("Attachment saved [", file.FullName, "]"));
+#endif
 									// The file should be there
 									file.Refresh();
 								}
-							} else if ( log.IsDebugEnabled )
+#if LOG
+							} else if ( log.IsDebugEnabled ) {
 								log.Debug("File already exists, skipping.");
-						} else if ( log.IsDebugEnabled )
+#endif
+							}
+#if LOG
+						} else if ( log.IsDebugEnabled ) {
 							log.Debug(System.String.Concat ("Folder name mistmatch. [", dir.FullName, "]<>[", new System.IO.DirectoryInfo (file.Directory.FullName).FullName, "]"));
-					} else if ( file!=null && log.IsErrorEnabled )
+#endif
+						}
+#if LOG
+					} else if ( file!=null && log.IsErrorEnabled ) {
 						log.Error ("Destination folder does not exists.");
+#endif
+					}
 					dir = null;
+#if LOG
 				} catch ( System.Exception e ) {
 					if ( log.IsErrorEnabled )
 						log.Error ("Error writting to disk: " + name, e);
+#else
+				} catch ( System.Exception ) {
+#endif
 					try {
 						if ( file!=null ) {
 							file.Refresh();
@@ -241,10 +283,14 @@ namespace anmar.SharpMimeTools
 		}
 		private bool parse () {
 			bool error = false;
+#if LOG
 			if ( log.IsDebugEnabled ) log.Debug (System.String.Concat("Parsing requested, type: ", this.mi.header.TopLevelMediaType.ToString(), ", subtype: ", this.mi.header.SubType) );
+#endif
 			if ( !this.IsMultipart || this.Equals(this.mi.parts.Parent) ) {
+#if LOG
 				if ( log.IsDebugEnabled )
 					log.Debug ("Parsing requested and this is not a multipart or it is already parsed");
+#endif
 				return true;
 			}
 			switch (this.mi.header.TopLevelMediaType) {
@@ -256,27 +302,38 @@ namespace anmar.SharpMimeTools
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.multipart:
 					this.message.SeekPoint ( this.mi.start_body );
 					System.String line;
+#if LOG
 					if ( log.IsDebugEnabled )
 						log.Debug (System.String.Format("Looking for multipart {1}, byte {0}", this.mi.start_body, this.mi.header.ContentTypeParameters["boundary"]));
+#endif
 					this.mi.parts.Parent = this;
 					for ( line=this.message.ReadLine(); line!=null ; line=this.message.ReadLine() ) {
 						if ( line.Equals( "--" + this.mi.header.ContentTypeParameters["boundary"] ) ) {
 							if ( this.mi.parts.Count>0 ) {
 								this.mi.parts.Get( this.mi.parts.Count-1 ).mi.end = this.message.Position_preRead;
+#if LOG
 								if ( log.IsDebugEnabled )
 									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
+#endif
 							}
+#if LOG
 							if ( log.IsDebugEnabled ) log.Debug (System.String.Format("Part     {1} found at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
+#endif
 							anmar.SharpMimeTools.SharpMimeMessage msg = new anmar.SharpMimeTools.SharpMimeMessage (this.message, this.message.Position );
 							this.mi.parts.Add (msg);
 						} else if ( line.Equals( "--" + this.mi.header.ContentTypeParameters["boundary"] + "--" ) ) {
 							this.mi.end = this.message.Position_preRead;
 							if ( this.mi.parts.Count>0 ) {
 								this.mi.parts.Get( this.mi.parts.Count-1 ).mi.end = this.message.Position_preRead;
+#if LOG
 								if ( log.IsDebugEnabled )
 									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
-							} else if ( log.IsDebugEnabled )
+#endif
+#if LOG
+							} else if ( log.IsDebugEnabled ) {
 								log.Debug (System.String.Format("End part {1} at byte {0}", this.mi.end, this.mi.header.ContentTypeParameters["boundary"]));
+#endif
+							}
 							break;
 						}
 					}
@@ -326,9 +383,13 @@ namespace anmar.SharpMimeTools
 						System.Byte[] tmp = null;
 						try {
 							tmp = System.Convert.FromBase64String(this.Body);
+#if LOG
 						} catch ( System.Exception e ) {
 							if ( log.IsErrorEnabled )
 								log.Error("Error dumping body", e);
+#else
+						} catch ( System.Exception ) {
+#endif
 						}
 						if ( tmp!=null )
 							return this.mi.header.Encoding.GetString(tmp);
@@ -432,9 +493,11 @@ namespace anmar.SharpMimeTools
 						fi = null;
 					} catch ( System.ArgumentException ) {
 						param = null;
+#if LOG
 						if ( log.IsErrorEnabled ) {
 							log.Error(System.String.Concat("Filename [", param, "] is not allowed by the filesystem"));
 						}
+#endif
 					}
 				}
 				return param;
