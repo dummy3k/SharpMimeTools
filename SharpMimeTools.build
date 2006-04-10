@@ -4,7 +4,7 @@
 	<property name="project.name" value="SharpMimeTools" />
 	<property name="build.defines" value="" />
 	<property name="build.debug" value="false" />
-	<property name="build.basedir" value="${nant.project.basedir}" />
+	<property name="build.basedir" value="${project::get-base-directory()}" />
 	<property name="build.dir" value="" />
 	<property name="build.ref.platform" value="" />
 	<property name="build.ref.platform.version" value="" />
@@ -43,6 +43,9 @@
 		<property name="build.config" value="release" />
 		<property name="build.defines" value="RELEASE" />
 		<call target="build" />
+	</target>
+	<target name="release-doc" description="Release build (with documentation)">
+		<call target="release" />
 		<call target="build-doc" />
 	</target>
 	<target name="release-log" description="Release build (with logging compiled)">
