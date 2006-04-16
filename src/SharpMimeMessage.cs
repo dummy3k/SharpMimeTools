@@ -194,12 +194,6 @@ namespace anmar.SharpMimeTools
 								if ( log.IsDebugEnabled )
 									log.Debug (System.String.Concat("Saving attachment [", file.FullName, "] ..."));
 #endif
-								if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
-									file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
-								if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
-									file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
-								if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
-									file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
 								System.IO.Stream stream = null;
 								try {
 									stream = file.Create();
@@ -229,6 +223,13 @@ namespace anmar.SharpMimeTools
 #endif
 									// The file should be there
 									file.Refresh();
+									// Set file dates
+									if ( this.Header.ContentDispositionParameters.ContainsKey("creation-date") )
+										file.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["creation-date"] );
+									if ( this.Header.ContentDispositionParameters.ContainsKey("modification-date") )
+										file.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["modification-date"] );
+									if ( this.Header.ContentDispositionParameters.ContainsKey("read-date") )
+										file.LastAccessTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( this.Header.ContentDispositionParameters["read-date"] );
 								}
 #if LOG
 							} else if ( log.IsDebugEnabled ) {

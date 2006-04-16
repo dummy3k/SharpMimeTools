@@ -2,6 +2,7 @@
  - [SharpAttachment] Remove invalid chars from Name before setting the value.
  - [SharpAttachment] Add CreationTime and LastWriteTime properties to store the dates associated with the attachment. Then set them to the file while saving it.
  - [SharpMessage] Get creation and modification dates from Content-Disposition header for the SharpAttachment instance.
+ - [SharpMimeMessage] DumpBody was setting dates before the file was written.
 
 04/10/2006
  - All the logging code is now conditionally compiled using the LOG define.
