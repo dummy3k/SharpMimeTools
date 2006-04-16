@@ -377,6 +377,12 @@ namespace anmar.SharpMimeTools
 					if ( attachment!=null ) {
 						attachment.MimeTopLevelMediaType = part.Header.TopLevelMediaType;
 						attachment.MimeMediaSubType = part.Header.SubType;
+						// Store attachment's CreationTime
+						if ( part.Header.ContentDispositionParameters.ContainsKey("creation-date") )
+							attachment.CreationTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( part.Header.ContentDispositionParameters["creation-date"] );
+						// Store attachment's LastWriteTime
+						if ( part.Header.ContentDispositionParameters.ContainsKey("modification-date") )
+							attachment.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( part.Header.ContentDispositionParameters["modification-date"] );
 						this._attachments.Add(attachment);
 					}
 					break;
@@ -392,6 +398,8 @@ namespace anmar.SharpMimeTools
 #if LOG
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 #endif
+		private System.DateTime _ctime = System.DateTime.MinValue;
+		private System.DateTime _mtime = System.DateTime.MinValue;
 		private System.String _name;
 		private System.IO.MemoryStream _stream;
 		private System.IO.FileInfo _saved_file;
@@ -411,6 +419,8 @@ namespace anmar.SharpMimeTools
 		/// <param name="file"><see cref="System.IO.MemoryStream" /> instance that contains the info about the attachment.</param>
 		public SharpAttachment ( System.IO.FileInfo file ) {
 			this._saved_file = file;
+			this._ctime = file.CreationTime;
+			this._mtime = file.LastWriteTime;
 		}
 		/// <summary>
 		/// Closes the underling stream if it's open.
@@ -470,6 +480,11 @@ namespace anmar.SharpMimeTools
 					if ( log.IsErrorEnabled )
 						log.Error(System.String.Concat("Destination file [", file.FullName, "] already exists"));
 #endif
+					// Though the file already exists, we set the times
+					if ( this._mtime!=System.DateTime.MinValue && file.LastWriteTime!=this._mtime )
+						file.LastWriteTime = this._mtime;
+					if ( this._ctime!=System.DateTime.MinValue && file.CreationTime!=this._ctime )
+						file.CreationTime = this._ctime;
 					return null;
 				}
 			}
@@ -479,6 +494,10 @@ namespace anmar.SharpMimeTools
 				stream.Flush();
 				stream.Close();
 				this.Close();
+				if ( this._mtime!=System.DateTime.MinValue )
+					file.LastWriteTime = this._mtime;
+				if ( this._ctime!=System.DateTime.MinValue )
+					file.CreationTime = this._ctime;
 				this._saved_file = file;
 #if LOG
 			} catch ( System.Exception e ) {
@@ -490,6 +509,22 @@ namespace anmar.SharpMimeTools
 				return null;
 			}
 			return file;
+		}
+		/// <summary>
+		/// Gets or sets the time when the file associated with this attachment was created.
+		/// </summary>
+		/// <value>The time this attachment was last written to.</value>
+		public System.DateTime CreationTime {
+			get { return this._ctime; }
+			set { this._ctime = value; }
+		}
+		/// <summary>
+		/// Gets or sets the time when the file associated with this attachment was last written to.
+		/// </summary>
+		/// <value>The time this attachment was last written to.</value>
+		public System.DateTime LastWriteTime {
+			get { return this._mtime; }
+			set { this._mtime = value; }
 		}
 		/// <summary>
 		/// Gets or sets the name of the attachment.
