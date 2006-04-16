@@ -498,9 +498,16 @@ namespace anmar.SharpMimeTools
 		public System.String Name {
 			get { return this._name; }
 			set {
-				if ( value!=null )
+				if ( value!=null ) {
+					if ( value.IndexOfAny(System.IO.Path.InvalidPathChars)!=-1 ) {
+						for ( int i=0, count=System.IO.Path.InvalidPathChars.Length; i<count; i++ ) {
+							char ch = System.IO.Path.InvalidPathChars[i];
+							if ( value.IndexOf(ch)!=-1 )
+								value = value.Replace(ch, '_');
+						}
+					}
 					this._name = System.IO.Path.GetFileName(value);
-				else
+				} else
 					this._name = null;
 			}
 		}

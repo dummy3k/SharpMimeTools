@@ -1,3 +1,6 @@
+04/16/2006
+ - [SharpAttachment] Remove invalid chars from Name before setting the value.
+
 04/10/2006
  - All the logging code is now conditionally compiled using the LOG define.
  - [nant] The default release target excludes all logging code so there is no external dependency.
