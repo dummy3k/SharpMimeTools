@@ -86,7 +86,7 @@ namespace anmar.SharpMimeTools
 			if ( this.startpoint==0 ) {
 				System.String line = this.message.ReadLine();
 				// Perhaps there is part of the POP3 response
-				if ( line!=null && line.StartsWith ("+OK") ) {
+				if ( line!=null && line.Length>3 && line[0]=='+' && line[1]=='O' && line[2]=='K' ) {
 #if LOG
 					if ( log.IsDebugEnabled ) log.Debug ("+OK present at top of the message");
 #endif

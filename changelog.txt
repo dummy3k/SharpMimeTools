@@ -1,6 +1,7 @@
 04/17/2006
  - [SharpMimeTools] Added UuDecode and UuDecodeLine methods to handle uuencoded content.
  - [SharpMessage] Extract uuencoded attachments from the body.
+ - [SharpMimeHeader] Avoid the StartsWith use to improve performance.
 
 04/16/2006
  - [SharpAttachment] Remove invalid chars from Name before setting the value.
