@@ -23,7 +23,7 @@ Dependencies:
  - Log4net - http://logging.apache.org/log4net/
 
 Project files provided for:
- - SharpDevelop - http://www.icsharpcode.net/
+ - SharpDevelop 2 - http://www.icsharpcode.net/
  
 For more info visit:
 http://anmar.eu.org/projects/sharpmimetools/development.html
