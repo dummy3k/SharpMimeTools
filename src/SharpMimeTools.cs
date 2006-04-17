@@ -346,5 +346,81 @@ namespace anmar.SharpMimeTools
 			return buf.ToString().Trim();
 
 		}
+		/// <summary>
+		/// Decodes the provided uuencoded string. 
+		/// </summary>
+		/// <param name="input"><see cref="System.String" /> with the uuendoced content.</param>
+		/// <returns>A <see cref="System.Byte" /> <see cref="System.Array" /> with the uudecoded content. Or the <b>null</b> reference if content can't be decoded.</returns>
+		/// <remarks>The input string must contain the <b>begin</b> and <b>end</b> delimiters.</remarks>
+		public static System.Byte[] UuDecode ( System.String input ) {
+			if ( input==null || input.Length==0 )
+				return null;
+			System.IO.StringReader reader = new System.IO.StringReader(input);
+			System.IO.MemoryStream stream = null;
+			System.Byte[] output = null;
+			for ( System.String line=reader.ReadLine(); line!=null; line=reader.ReadLine() ) {
+				// Found the start point of uuencoded content
+				if ( line.Length>10 && line[0]=='b' && line[1]=='e' && line[2]=='g' && line[3]=='i' && line[4]=='n' && line[5]==' ' && line[9]==' ' ) {
+					stream = new System.IO.MemoryStream();
+					continue;
+				}
+				// Not within uuencoded content
+				if ( stream==null )
+					continue;
+				// Content finished
+				if ( line.Length==3 && line=="end" ) {
+					stream.Flush();
+					output = stream.ToArray();
+					stream.Close();
+					stream = null;
+					break;
+				}
+				// Decode and write uuencoded line
+				UuDecodeLine(line, stream);
+			}
+			reader.Close();
+			reader = null;
+			if ( stream!=null ) {
+				stream.Close();
+				stream = null;
+			}
+			return output;
+		}
+		/// <summary>
+		/// Decodes the provided uuencoded line. 
+		/// </summary>
+		/// <param name="s"><see cref="System.String" /> with the uuendoced line.</param>
+		/// <param name="stream"><see cref="System.IO.Stream" /> where decoded <see cref="System.Byte" /> should be written.</param>
+		/// <returns><b>true</b> if content has been decoded and <b>false</b> otherwise.</returns>
+		public static bool UuDecodeLine ( System.String s, System.IO.Stream stream ) {
+			if ( s==null || s.Length==0 || stream==null || !stream.CanWrite )
+				return false;
+			System.Byte[] input = System.Text.Encoding.ASCII.GetBytes(s);
+			int length = input.Length;
+			int length_output = 0;
+			// Full line, so it has length info in the first byte
+			if ( (length%4)==1 ) {
+				length_output = ((input[0]-0x20) & 0x3f);
+			}
+			// Wrong input
+			if ( length==0 || length_output<=0 )
+				return false;
+			// Decode each four characters of input to three octets of output
+			for ( int i=1, pos=0; i<length; i+=4 ) {
+				System.Byte b = (byte)((input[i+1]-0x20) & 0x3f);
+				System.Byte c = (byte)((input[i+2]-0x20) & 0x3f);
+				stream.WriteByte((byte)(((input[i]-0x20) & 0x3f)<<2|b>>4));
+				pos++;
+				if ( pos<length_output ) {
+					stream.WriteByte((byte)(b<<4|c>>2));
+					pos++;
+				}
+				if ( pos<length_output ) {
+					stream.WriteByte((byte)(c<<6|((input[i+3]-0x20) & 0x3f)));
+					pos++;
+				}
+			}
+			return true;
+		}
 	}
 }
