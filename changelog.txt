@@ -2,6 +2,8 @@
  - [SharpMimeTools] Added UuDecode and UuDecodeLine methods to handle uuencoded content.
  - [SharpMessage] Extract uuencoded attachments from the body.
  - [SharpMimeHeader] Avoid the StartsWith use to improve performance.
+ - [SharpTnefMessage] Initial implementation. It's a ms-tnef decoder, though in this initial form it only decodes attachments.
+ - [SharpMessage] Use the above to extract attachments from ms-tnef parts and add them as regular attachments.
 
 04/16/2006
  - [SharpAttachment] Remove invalid chars from Name before setting the value.

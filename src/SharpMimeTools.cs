@@ -49,6 +49,15 @@ namespace anmar.SharpMimeTools
 				return null;
 			}
 		}
+		internal static System.Enum ParseEnum ( System.Type t, System.Object s, System.Enum defaultvalue ) {
+			if ( s==null )
+				return defaultvalue;
+			System.Enum value = defaultvalue;
+			if ( System.Enum.IsDefined(t, s) ) {
+				value = (System.Enum)System.Enum.Parse(t, s.ToString());
+			}
+			return value;
+		}
 		/// <summary>
 		/// Parse a rfc 2822 address specification. rfc 2822 section 3.4
 		/// </summary>

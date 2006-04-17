@@ -377,6 +377,35 @@ namespace anmar.SharpMimeTools
 						}
 						stream = null;
 					}
+					if ( attachment!=null && part.Header.SubType=="ms-tnef" ) {
+					// Try getting attachments form a tnef stream
+#if LOG
+						if ( log.IsDebugEnabled ) {
+							log.Debug(System.String.Concat("Decoding ms-tnef stream."));
+						}
+#endif
+						System.IO.Stream stream = attachment.Stream;
+						if ( stream!=null && stream.CanSeek )
+							stream.Seek(0, System.IO.SeekOrigin.Begin);
+						anmar.SharpMimeTools.SharpTnefMessage tnef = new anmar.SharpMimeTools.SharpTnefMessage(stream);
+						if ( tnef.Parse(path) ) {
+							if ( tnef.Attachments!=null ) {
+								this._attachments.AddRange(tnef.Attachments);
+							}
+							attachment.Close();
+							// The dumped
+							if ( attachment.SavedFile!=null )
+								attachment.SavedFile.Delete();
+							attachment = null;
+							tnef.Close();
+#if LOG
+							if ( log.IsDebugEnabled ) {
+								log.Debug(System.String.Concat("ms-tnef stream decoded successfully. Found [", ((tnef.Attachments!=null)?tnef.Attachments.Count:0),"] attachments."));
+							}
+#endif
+						}
+						tnef = null;
+					}
 					if ( attachment!=null ) {
 						attachment.MimeTopLevelMediaType = part.Header.TopLevelMediaType;
 						attachment.MimeMediaSubType = part.Header.SubType;
