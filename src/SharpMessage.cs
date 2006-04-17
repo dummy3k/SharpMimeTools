@@ -239,6 +239,9 @@ namespace anmar.SharpMimeTools
 			this._headers = message.Header;
 			message.Close();
 			message = null;
+			// find and decode uuencoded content if binary attachments are allowed
+			if ( (types&anmar.SharpMimeTools.MimeTopLevelMediaType.application)==anmar.SharpMimeTools.MimeTopLevelMediaType.application )
+				this.UuDecode(path);
 			// Date
 			this._date = anmar.SharpMimeTools.SharpMimeTools.parseDate(this._headers.Date);
 			if ( this._date.Equals(System.DateTime.MinValue) ) {
@@ -389,6 +392,69 @@ namespace anmar.SharpMimeTools
 				default:
 					break;
 			}
+		}
+		private void UuDecode ( System.String path ) {
+			if ( this._body.Length==0 || this._body.IndexOf("begin ")==-1 || this._body.IndexOf("end")==-1 )
+				return;
+			System.Text.StringBuilder sb = new System.Text.StringBuilder(); 
+			System.IO.StringReader reader = new System.IO.StringReader(this._body);
+			System.IO.Stream stream = null;
+			anmar.SharpMimeTools.SharpAttachment attachment = null;
+			for ( System.String line=reader.ReadLine(); line!=null; line=reader.ReadLine() ) {
+				if ( stream==null ) {
+					// Found the start point of uuencoded content
+					if ( line.Length>10 && line[0]=='b' && line[1]=='e' && line[2]=='g' && line[3]=='i' && line[4]=='n' && line[5]==' ' && line[9]==' ' ) {
+						System.String name = System.IO.Path.GetFileName(line.Substring(10));
+#if LOG
+						if ( log.IsDebugEnabled )
+							log.Debug (System.String.Concat("uuencoded content found. name[", name, "]"));
+#endif
+						// In-Memory decoding
+						if ( path==null ) {
+							attachment = new anmar.SharpMimeTools.SharpAttachment(new System.IO.MemoryStream());
+							stream = attachment.Stream;
+						// Filesystem decoding
+						} else {
+							attachment = new anmar.SharpMimeTools.SharpAttachment(new System.IO.FileInfo(System.IO.Path.Combine(path, name)));
+							stream = attachment.SavedFile.OpenWrite();
+						}
+						attachment.Name = name;
+					// Not uuencoded line, so add it to new body
+					} else {
+						sb.Append(line);
+						sb.Append(System.Environment.NewLine);
+					}
+				} else {
+					// Content finished
+					if ( line.Length==3 && line=="end" ) {
+						stream.Flush();
+						if (  stream.Length>0 ) {
+#if LOG
+							if ( log.IsDebugEnabled )
+								log.Debug (System.String.Concat("uuencoded content finished. name[", attachment.Name, "] size[", stream.Length, "]"));
+#endif
+							this._attachments.Add(attachment);
+						}
+						// When decoding to a file, close the stream.
+						if ( attachment.SavedFile!=null || stream.Length==0 ) {
+							stream.Close();
+						}
+						attachment = null;
+						stream = null;
+					// Decode and write uuencoded line
+					} else {
+						anmar.SharpMimeTools.SharpMimeTools.UuDecodeLine(line, stream);
+					}
+				}
+			}
+			if ( stream!=null && stream.CanRead ) {
+				stream.Close();
+				stream = null;
+			}
+			reader.Close();
+			reader = null;
+			this._body = sb.ToString();
+			sb = null;
 		}
 	}
 	/// <summary>
