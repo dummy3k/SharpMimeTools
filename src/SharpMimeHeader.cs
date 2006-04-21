@@ -248,6 +248,13 @@ namespace anmar.SharpMimeTools
 			}
 		}
 		/// <summary>
+		/// Gets Content-ID header field
+		/// </summary>
+		/// <value>Content-ID header body</value>
+		public System.String ContentID {
+			get { return this.GetHeaderField("Content-ID", System.String.Empty, true, false); }
+		}
+		/// <summary>
 		/// Gets Content-Location header field
 		/// </summary>
 		/// <value>Content-Location header body</value>

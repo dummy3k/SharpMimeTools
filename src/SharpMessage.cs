@@ -314,8 +314,20 @@ namespace anmar.SharpMimeTools
 									break;
 								}
 							}
-							if ( altenative!=null )
+							if ( altenative!=null ) {
+								// If message body as html is allowed and part has a Content-ID field
+								// add an anchor to mark this body part
+								if ( html && part.Header.Contains("Content-ID") ) {
+									// There is a previous text body, so enclose it in <pre>
+									if ( !this._body_html && this._body.Length>0 ) {
+										this._body = System.String.Concat ("<pre>", System.Web.HttpUtility.HtmlEncode(this._body), "</pre>");
+										this._body_html = true;
+									}
+									// Add the anchor
+									this._body = System.String.Concat (this._body, "<a name=\"", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID), "_", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
+								}
 								this.ParseMessage(altenative, types, html, preferredtextsubtype, path);
+							}
 						}
 					// TODO: Take into account each subtype of "multipart"
 					} else if ( part.PartsCount>0 ) {
@@ -335,8 +347,16 @@ namespace anmar.SharpMimeTools
 							else
 								this._body_html=true;
 						}
+						if ( html && part.Header.Contains("Content-ID") ) {
+							this._body_html = true;
+						}
 						if ( this._body_html && !body_was_html && this._body.Length>0 ) {
 							this._body = System.String.Concat ("<pre>", System.Web.HttpUtility.HtmlEncode(this._body), "</pre>");
+						}
+						// If message body is html and this part has a Content-ID field
+						// add an anchor to mark this body part
+						if ( this._body_html && part.Header.Contains("Content-ID") ) {
+							this._body = System.String.Concat (this._body, "<a name=\"", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID), "_", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
 						}
 						if ( this._body_html && part.Header.SubType.Equals("plain") ) {
 							this._body = System.String.Concat (this._body, "<pre>", System.Web.HttpUtility.HtmlEncode(part.BodyDecoded), "</pre>");
@@ -415,11 +435,80 @@ namespace anmar.SharpMimeTools
 						// Store attachment's LastWriteTime
 						if ( part.Header.ContentDispositionParameters.ContainsKey("modification-date") )
 							attachment.LastWriteTime = anmar.SharpMimeTools.SharpMimeTools.parseDate ( part.Header.ContentDispositionParameters["modification-date"] );
+						if ( part.Header.Contains("Content-ID") )
+							attachment.ContentID = part.Header.ContentID;
 						this._attachments.Add(attachment);
 					}
 					break;
 				default:
 					break;
+			}
+		}
+		private System.String ReplaceUrlTokens ( System.String url, anmar.SharpMimeTools.SharpAttachment attachment ) {
+			if ( url==null || url.Length==0 || url.IndexOf('[')==-1  || url.IndexOf(']')==-1 )
+				return url;
+			if ( url.IndexOf("[MessageID]")!=-1 ) {
+				url = url.Replace("[MessageID]", System.Web.HttpUtility.UrlEncode(anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID)));
+			}
+			if ( attachment!=null && attachment.ContentID!=null ) {
+				if ( url.IndexOf("[ContentID]")!=-1 ) {
+					url = url.Replace("[ContentID]", System.Web.HttpUtility.UrlEncode(anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(attachment.ContentID)));
+				}
+				if ( url.IndexOf("[Name]")!=-1 ) {
+					if ( attachment.SavedFile!=null ) {
+						url = url.Replace("[Name]", System.Web.HttpUtility.UrlEncode(attachment.SavedFile.Name));
+					} else {
+						url = url.Replace("[Name]", System.Web.HttpUtility.UrlEncode(attachment.Name));
+					}
+				}
+			}
+			return url;
+		}
+		/// <summary>
+		/// Set the URL used to reference embedded parts from the HTML body (as specified on RFC2392)
+		/// </summary>
+		/// <param name="attachmentsurl">URL used to reference embedded parts from the HTML body.</param>
+		/// <remarks>The supplied URL will be replaced with the following tokens for each attachment:<br />
+		/// <ul>
+		///  <li><b>[MessageID]</b>: Will be replaced with the <see cref="MessageID" /> of the current instance.</li>
+		///  <li><b>[ContentID]</b>: Will be replaced with the <see cref="anmar.SharpMimeTools.SharpAttachment.ContentID" /> of the attachment.</li>
+		///  <li><b>[Name]</b>: Will be replaced with the <see cref="anmar.SharpMimeTools.SharpAttachment.Name" /> of the attachment (or with <see cref="System.IO.FileInfo.Name" /> from <see cref="anmar.SharpMimeTools.SharpAttachment.SavedFile" /> if the instance has been already saved to disk).</li>
+		/// </ul>
+		///</remarks>
+		public void SetUrlBase ( System.String attachmentsurl ) {
+			// Not a html boy or not body at all
+			if ( !this._body_html || this._body.Length==0 )
+				return;
+			// No references found, so nothing to do
+			if ( this._body.IndexOf("cid:")==-1 && this._body.IndexOf("mid:")==-1 )
+				return;
+			System.String msgid = anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID);
+			// There is a base url and attachments, so try refererencing them properly
+			if ( attachmentsurl!=null && this._attachments!=null && this._attachments.Count>0 ) {
+				for ( int i=0, count=this._attachments.Count; i<count; i++ ) {
+					anmar.SharpMimeTools.SharpAttachment attachment = (anmar.SharpMimeTools.SharpAttachment)this._attachments[i];
+					if ( attachment.ContentID!=null ) {
+						System.String conid = anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(attachment.ContentID);
+						if ( conid.Length>0 ) {
+							if ( this._body.IndexOf("cid:" + conid)!=-1 )
+								this._body = this._body.Replace("cid:" + conid, this.ReplaceUrlTokens(attachmentsurl, attachment));
+							if ( msgid.Length>0 && this._body.IndexOf("mid:" + msgid + "/" + conid)!=-1 )
+								this._body = this._body.Replace("mid:" + msgid + "/" + conid, this.ReplaceUrlTokens(attachmentsurl, attachment));
+							// No more references found, so nothing to do
+							if ( this._body.IndexOf("cid:")==-1 && this._body.IndexOf("mid:")==-1 )
+								break;
+						}
+					}
+				}
+			}
+			// The rest references must be to text parts
+			// so rewrite them to refer to the named anchors added by ParseMessage
+			if ( this._body.IndexOf("cid:")!=-1 ) {
+				this._body = this._body.Replace("cid:", "#" + msgid + "_");
+			}
+			if ( msgid.Length>0 && this._body.IndexOf("mid:")!=-1 ) {
+				this._body = this._body.Replace("mid:" + msgid + "/", "#" + msgid + "_");
+				this._body = this._body.Replace("mid:" + msgid, "#" + msgid);
 			}
 		}
 		private void UuDecode ( System.String path ) {
@@ -494,6 +583,7 @@ namespace anmar.SharpMimeTools
 		private static log4net.ILog log  = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 #endif
 		private System.DateTime _ctime = System.DateTime.MinValue;
+		private System.String _cid;
 		private System.DateTime _mtime = System.DateTime.MinValue;
 		private System.String _name;
 		private System.IO.MemoryStream _stream;
@@ -604,6 +694,14 @@ namespace anmar.SharpMimeTools
 				return null;
 			}
 			return file;
+		}
+		/// <summary>
+		/// Gets or sets the Content-ID of this attachment.
+		/// </summary>
+		/// <value>Content-ID header of this instance. Or the <b>null</b> reference.</value>
+		public System.String ContentID {
+			get { return this._cid; }
+			set { this._cid = value; }
 		}
 		/// <summary>
 		/// Gets or sets the time when the file associated with this attachment was created.

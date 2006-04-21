@@ -1,3 +1,10 @@
+04/21/2006
+ - [SharpMimeTools] Added Rfc2392Url method to prepare Message-ID and Content-ID values for url inclusion.
+ - [SharpMimeHeader] Added ContentID property.
+ - [SharpMessage] Mark each html body part that has a Content-ID header with a named anchor.
+ - [SharpMessage] Added SetUrlBase method to provide access for mid: and cid: referenced message parts in the body (RFC2392).
+ - [SharpAttachment] Added ContentID property.
+ 
 04/17/2006
  - [SharpMimeTools] Added UuDecode and UuDecodeLine methods to handle uuencoded content.
  - [SharpMessage] Extract uuencoded attachments from the body.

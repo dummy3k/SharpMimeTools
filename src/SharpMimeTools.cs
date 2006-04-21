@@ -356,6 +356,21 @@ namespace anmar.SharpMimeTools
 
 		}
 		/// <summary>
+		/// Encodes a Message-ID or Content-ID following RFC 2392 rules. 
+		/// </summary>
+		/// <param name="input"><see cref="System.String" /> with the Message-ID or Content-ID.</param>
+		/// <returns><see cref="System.String" /> with the value encoded as RFC 2392 dictates.</returns> 
+		public static System.String Rfc2392Url ( System.String input) {
+			if ( input==null || input.Length<4 )
+				return input;
+			if ( input.Length>2 && input[0]=='<' && input[input.Length-1]=='>' )
+				input = input.Substring(1, input.Length-2);
+			if ( input.IndexOf('/')!=-1 ) {
+				input = input.Replace("/", "%2f");
+			}
+			return input;
+		}
+		/// <summary>
 		/// Decodes the provided uuencoded string. 
 		/// </summary>
 		/// <param name="input"><see cref="System.String" /> with the uuendoced content.</param>
