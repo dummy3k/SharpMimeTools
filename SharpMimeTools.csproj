@@ -79,6 +79,7 @@
     <Compile Include="src\SharpMimeMessageStream.cs" />
     <Compile Include="src\SharpMimeTools.cs" />
     <Compile Include="src\SharpMessage.cs" />
+    <Compile Include="src\SharpTnefMessage.cs" />
     <None Include="changelog.txt" />
     <None Include="license.txt" />
     <None Include="doc\readme.txt" />
