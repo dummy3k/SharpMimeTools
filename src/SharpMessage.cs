@@ -101,12 +101,17 @@ namespace anmar.SharpMimeTools
 		/// </remarks>
 		public SharpMessage( System.IO.Stream message, bool attachments, bool html, System.String path, System.String preferredtextsubtype ) {
 			anmar.SharpMimeTools.MimeTopLevelMediaType types = anmar.SharpMimeTools.MimeTopLevelMediaType.text|anmar.SharpMimeTools.MimeTopLevelMediaType.multipart|anmar.SharpMimeTools.MimeTopLevelMediaType.message;
-			if ( attachments )
+			SharpDecodeOptions options = SharpDecodeOptions.None;
+			if ( attachments ) {
 				types = types|anmar.SharpMimeTools.MimeTopLevelMediaType.application|anmar.SharpMimeTools.MimeTopLevelMediaType.audio|anmar.SharpMimeTools.MimeTopLevelMediaType.image|anmar.SharpMimeTools.MimeTopLevelMediaType.video;
+				options = options|SharpDecodeOptions.AllowAttachments;
+			}
+			if ( html )
+				options = options|SharpDecodeOptions.AllowHtml;
 			if ( path==null || !System.IO.Directory.Exists(path) )
-				this.ParseMessage(message, types, html, preferredtextsubtype, null);
+				this.ParseMessage(message, types, options, preferredtextsubtype, null);
 			else
-				this.ParseMessage(message, types, html, preferredtextsubtype, path);
+				this.ParseMessage(message, types, options, preferredtextsubtype, path);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
@@ -133,11 +138,21 @@ namespace anmar.SharpMimeTools
 		/// <param name="html"><b>true</b> to allow HTML content; <b>false</b> to ignore the html content.</param>
 		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
 		/// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
-		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path, System.String preferredtextsubtype ) {
+		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String path, System.String preferredtextsubtype ) : this(message, types, ((html)?SharpDecodeOptions.Default:SharpDecodeOptions.AllowAttachments), path, preferredtextsubtype) {
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="types">A <see cref="anmar.SharpMimeTools.MimeTopLevelMediaType" /> value that specifies the allowed Mime-Types to being decoded.</param>
+		/// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
+		/// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
+		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, SharpDecodeOptions options, System.String path, System.String preferredtextsubtype ) {
 			if ( path==null || !System.IO.Directory.Exists(path) )
-				this.ParseMessage(message, types, html, preferredtextsubtype, null);
+				this.ParseMessage(message, types, options, preferredtextsubtype, null);
 			else
-				this.ParseMessage(message, types, html, preferredtextsubtype, path);
+				this.ParseMessage(message, types, options, preferredtextsubtype, path);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.String" />.
@@ -232,15 +247,16 @@ namespace anmar.SharpMimeTools
 			return this._headers.GetHeaderField(name, System.String.Empty, true, true);
 		}
 
-		private void ParseMessage ( System.IO.Stream stream, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String preferredtextsubtype, System.String path ) {
+		private void ParseMessage ( System.IO.Stream stream, anmar.SharpMimeTools.MimeTopLevelMediaType types, SharpDecodeOptions options, System.String preferredtextsubtype, System.String path ) {
 			this._attachments = new System.Collections.ArrayList();
 			anmar.SharpMimeTools.SharpMimeMessage message = new anmar.SharpMimeTools.SharpMimeMessage(stream);
-			this.ParseMessage(message, types, html, preferredtextsubtype, path);
+			this.ParseMessage(message, types, (options&SharpDecodeOptions.AllowHtml)==SharpDecodeOptions.AllowHtml, options, preferredtextsubtype, path);
 			this._headers = message.Header;
 			message.Close();
 			message = null;
-			// find and decode uuencoded content if binary attachments are allowed
-			if ( (types&anmar.SharpMimeTools.MimeTopLevelMediaType.application)==anmar.SharpMimeTools.MimeTopLevelMediaType.application )
+			// find and decode uuencoded content if configured to do so (and attachments a allowed)
+			if ( (options&anmar.SharpMimeTools.SharpDecodeOptions.UuDecode)==anmar.SharpMimeTools.SharpDecodeOptions.UuDecode
+			       && (options&anmar.SharpMimeTools.SharpDecodeOptions.AllowAttachments)==anmar.SharpMimeTools.SharpDecodeOptions.AllowAttachments )
 				this.UuDecode(path);
 			// Date
 			this._date = anmar.SharpMimeTools.SharpMimeTools.parseDate(this._headers.Date);
@@ -269,7 +285,7 @@ namespace anmar.SharpMimeTools
 					this._from_name = item["address"];
 			}
 		}
-		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, System.String preferredtextsubtype, System.String path ) {
+		private void ParseMessage ( anmar.SharpMimeTools.SharpMimeMessage part, anmar.SharpMimeTools.MimeTopLevelMediaType types, bool html, SharpDecodeOptions options, System.String preferredtextsubtype, System.String path ) {
 			if ( (types&part.Header.TopLevelMediaType)!=part.Header.TopLevelMediaType ) {
 #if LOG
 				if ( log.IsDebugEnabled )
@@ -317,7 +333,7 @@ namespace anmar.SharpMimeTools
 							if ( altenative!=null ) {
 								// If message body as html is allowed and part has a Content-ID field
 								// add an anchor to mark this body part
-								if ( html && part.Header.Contains("Content-ID") ) {
+								if ( html && part.Header.Contains("Content-ID") && (options&anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors)==anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors ) {
 									// There is a previous text body, so enclose it in <pre>
 									if ( !this._body_html && this._body.Length>0 ) {
 										this._body = System.String.Concat ("<pre>", System.Web.HttpUtility.HtmlEncode(this._body), "</pre>");
@@ -326,13 +342,13 @@ namespace anmar.SharpMimeTools
 									// Add the anchor
 									this._body = System.String.Concat (this._body, "<a name=\"", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID), "_", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
 								}
-								this.ParseMessage(altenative, types, html, preferredtextsubtype, path);
+								this.ParseMessage(altenative, types, html, options, preferredtextsubtype, path);
 							}
 						}
 					// TODO: Take into account each subtype of "multipart"
 					} else if ( part.PartsCount>0 ) {
 						foreach ( anmar.SharpMimeTools.SharpMimeMessage item in part ) {
-							this.ParseMessage(item, types, html, preferredtextsubtype, path);
+							this.ParseMessage(item, types, html, options, preferredtextsubtype, path);
 						}
 					}
 					break;
@@ -347,7 +363,7 @@ namespace anmar.SharpMimeTools
 							else
 								this._body_html=true;
 						}
-						if ( html && part.Header.Contains("Content-ID") ) {
+						if ( html && part.Header.Contains("Content-ID") && (options&anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors)==anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors ) {
 							this._body_html = true;
 						}
 						if ( this._body_html && !body_was_html && this._body.Length>0 ) {
@@ -355,7 +371,7 @@ namespace anmar.SharpMimeTools
 						}
 						// If message body is html and this part has a Content-ID field
 						// add an anchor to mark this body part
-						if ( this._body_html && part.Header.Contains("Content-ID") ) {
+						if ( this._body_html && part.Header.Contains("Content-ID") && (options&anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors)==anmar.SharpMimeTools.SharpDecodeOptions.NamedAnchors ) {
 							this._body = System.String.Concat (this._body, "<a name=\"", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(this.MessageID), "_", anmar.SharpMimeTools.SharpMimeTools.Rfc2392Url(part.Header.ContentID), "\"></a>");
 						}
 						if ( this._body_html && part.Header.SubType.Equals("plain") ) {
@@ -377,6 +393,9 @@ namespace anmar.SharpMimeTools
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.audio:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.image:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.video:
+					// Attachments not allowed.
+					if ( (options&anmar.SharpMimeTools.SharpDecodeOptions.AllowAttachments)!=anmar.SharpMimeTools.SharpDecodeOptions.AllowAttachments )
+						break;
 					anmar.SharpMimeTools.SharpAttachment attachment = null;
 					// Save to a file
 					if ( path!=null ) {
@@ -397,7 +416,7 @@ namespace anmar.SharpMimeTools
 						}
 						stream = null;
 					}
-					if ( attachment!=null && part.Header.SubType=="ms-tnef" ) {
+					if ( attachment!=null && part.Header.SubType=="ms-tnef" && (options&anmar.SharpMimeTools.SharpDecodeOptions.DecodeTnef)==anmar.SharpMimeTools.SharpDecodeOptions.DecodeTnef ) {
 					// Try getting attachments form a tnef stream
 #if LOG
 						if ( log.IsDebugEnabled ) {
