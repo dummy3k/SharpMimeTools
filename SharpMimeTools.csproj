@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="src\ABNF.cs" />
     <Compile Include="src\AssemblyInfo.cs" />
+    <Compile Include="src\SharpDecodeOptions.cs" />
     <Compile Include="src\SharpMimeAddress.cs" />
     <Compile Include="src\SharpMimeHeader.cs" />
     <Compile Include="src\SharpMimeMessage.cs" />
