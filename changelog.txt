@@ -2,6 +2,7 @@
  - [SharpMimeTools] Added GetFileName method to unify the SharpMessage and SharpMimeMessage Name properties behavior.
  - [SharpMimeMessage] Use the above in Name property.
  - [SharpMessage] Use GetFileName method when asigning Name property to ensure the value is usable in the target filesystem. If it's not, try to use the extension can be used with the old name.
+ - [SharpTnefMessage] Honour OemCodepage attribute if it's present in the stream and the system supports it. Otherwise fallback to SharpMimeHeader.EncodingDefault.
 
 04/21/2006
  - [SharpMimeTools] Added Rfc2392Url method to prepare Message-ID and Content-ID values for url inclusion.

@@ -103,6 +103,7 @@ namespace anmar.SharpMimeTools
 			bool error = false;
 			this._attachments = new System.Collections.ArrayList();
 			ushort key = this.ReadUInt16();
+			System.Text.Encoding enc = anmar.SharpMimeTools.SharpMimeHeader.EncodingDefault;
 			anmar.SharpMimeTools.SharpAttachment attachment_cur = null; 
 			for ( System.Byte cur=this.ReadByte(); cur!=System.Byte.MinValue; cur=ReadByte() ) {
 				TnefLvlType lvl = (TnefLvlType)anmar.SharpMimeTools.SharpMimeTools.ParseEnum(typeof(TnefLvlType), cur, TnefLvlType.Unknown);
@@ -143,11 +144,24 @@ namespace anmar.SharpMimeTools
 					// Text body
 					if ( att_n==TnefAttribute.Body ) {
 						if ( att_t==TnefDataType.atpString ) {
-							this._body = anmar.SharpMimeTools.SharpMimeHeader.EncodingDefault.GetString(buffer, 0, size);
+							this._body = enc.GetString(buffer, 0, size);
 						}
 					// Message mapi props (html body, rtf body, ...)
 					} else if ( att_n==TnefAttribute.MapiProps ) {
 						this.ReadMapi(buffer, size);
+					// Stream Codepage
+					} else if ( att_n==TnefAttribute.OEMCodepage ) {
+						uint codepage1 = (uint)(buffer[0] + (buffer[1]<<8)  +(buffer[2]<<16) + (buffer[3]<<24));
+						if ( codepage1>0 ) {
+							try {
+								enc = System.Text.Encoding.GetEncoding((int)codepage1);
+#if LOG
+								if ( logger.IsDebugEnabled ) {
+									logger.Debug(System.String.Concat("Now using [", enc.EncodingName, "] encoding to decode strings."));
+								}
+#endif
+							} catch ( System.Exception ) {}
+						}
 					}
 				} else if ( lvl==TnefLvlType.Attachment ) {
 					// Attachment start
@@ -167,7 +181,7 @@ namespace anmar.SharpMimeTools
 								size--;
 							}
 							if ( size>0 ) {
-								System.String name = anmar.SharpMimeTools.SharpMimeHeader.EncodingDefault.GetString(buffer, 0, size);
+								System.String name = enc.GetString(buffer, 0, size);
 								if ( name.Length>0 ) {
 									attachment_cur.Name = name;
 									// Content already saved, so we have to rename
