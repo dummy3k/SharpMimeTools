@@ -1,3 +1,8 @@
+05/10/2006
+ - [SharpMimeTools] Added GetFileName method to unify the SharpMessage and SharpMimeMessage Name properties behavior.
+ - [SharpMimeMessage] Use the above in Name property.
+ - [SharpMessage] Use GetFileName method when asigning Name property to ensure the value is usable in the target filesystem. If it's not, try to use the extension can be used with the old name.
+
 04/21/2006
  - [SharpMimeTools] Added Rfc2392Url method to prepare Message-ID and Content-ID values for url inclusion.
  - [SharpMimeHeader] Added ContentID property.

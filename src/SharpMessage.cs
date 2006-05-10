@@ -745,17 +745,11 @@ namespace anmar.SharpMimeTools
 		public System.String Name {
 			get { return this._name; }
 			set {
-				if ( value!=null ) {
-					if ( value.IndexOfAny(System.IO.Path.InvalidPathChars)!=-1 ) {
-						for ( int i=0, count=System.IO.Path.InvalidPathChars.Length; i<count; i++ ) {
-							char ch = System.IO.Path.InvalidPathChars[i];
-							if ( value.IndexOf(ch)!=-1 )
-								value = value.Replace(ch, '_');
-						}
-					}
-					this._name = System.IO.Path.GetFileName(value);
-				} else
-					this._name = null;
+				System.String name = anmar.SharpMimeTools.SharpMimeTools.GetFileName(value);
+				if ( value!=null && name==null && this._name!=null && System.IO.Path.HasExtension(value) ) {
+					name = System.IO.Path.ChangeExtension(this._name, System.IO.Path.GetExtension(value));
+				}
+				this._name = name;
 			}
 		}
 		/// <summary>

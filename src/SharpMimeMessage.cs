@@ -478,30 +478,7 @@ namespace anmar.SharpMimeTools
 				if ( param==null ) {
 					param = this.Header.ContentLocationParameters["Content-Location"];
 				}
-				if ( param!=null ) {
-					param = param.Replace("\t", "");
-					try {
-						param = System.IO.Path.GetFileName(param);
-					} catch ( System.ArgumentException ) {
-						// Remove invalid chars
-						foreach ( char ichar in System.IO.Path.InvalidPathChars ) {
-							param = param.Replace ( ichar.ToString(), System.String.Empty );
-						}
-						param = System.IO.Path.GetFileName(param);
-					}
-					try {
-						System.IO.FileInfo fi = new System.IO.FileInfo(param);
-						fi = null;
-					} catch ( System.ArgumentException ) {
-						param = null;
-#if LOG
-						if ( log.IsErrorEnabled ) {
-							log.Error(System.String.Concat("Filename [", param, "] is not allowed by the filesystem"));
-						}
-#endif
-					}
-				}
-				return param;
+				return anmar.SharpMimeTools.SharpMimeTools.GetFileName(param);
 			}
 		}
 		internal anmar.SharpMimeTools.SharpMimeMessageCollection  Parts {

@@ -37,6 +37,34 @@ namespace anmar.SharpMimeTools
 																@"dddd, d MMM yyyy H:m zzz", @"ddd, d MMM yyyy H:m zzz", @"d MMM yyyy H:m zzz",
 																@"dddd, d MMM yy H:m zzz", @"ddd, d MMM yy H:m zzz", @"d MMM yy H:m zzz"
 			};
+		
+		internal static System.String GetFileName ( System.String name ) {
+			if ( name==null || name.Length==0 )
+				return name;
+			name = name.Replace("\t", "");
+			try {
+				name = System.IO.Path.GetFileName(name);
+			} catch ( System.ArgumentException ) {
+				// Remove invalid chars
+				foreach ( char ichar in System.IO.Path.InvalidPathChars ) {
+					name = name.Replace ( ichar.ToString(), System.String.Empty );
+				}
+				name = System.IO.Path.GetFileName(name);
+			}
+			try {
+				System.IO.FileInfo fi = new System.IO.FileInfo(name);
+				if ( fi!=null )
+					fi = null;
+			} catch ( System.ArgumentException ) {
+				name = null;
+#if LOG
+				if ( log.IsErrorEnabled ) {
+					log.Error(System.String.Concat("Filename [", name, "] is not allowed by the filesystem"));
+				}
+#endif
+			}
+			return name;
+		}
 		/// <summary>
 		/// Parses a <see cref="System.Text.Encoding" /> from a charset name
 		/// </summary>
