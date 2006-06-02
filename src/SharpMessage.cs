@@ -407,6 +407,7 @@ namespace anmar.SharpMimeTools
 						if ( file!=null ) {
 							attachment = new anmar.SharpMimeTools.SharpAttachment(file);
 							attachment.Name = file.Name;
+							attachment.Size = file.Length;
 						}
 					// Save to a stream
 					} else {
@@ -417,6 +418,7 @@ namespace anmar.SharpMimeTools
 								attachment.Name = part.Name;
 							else
 								attachment.Name = System.String.Concat("generated_", part.GetHashCode(), ".", part.Header.SubType);
+							attachment.Size = stream.Length;
 						}
 						stream = null;
 					}
@@ -574,6 +576,7 @@ namespace anmar.SharpMimeTools
 							if ( log.IsDebugEnabled )
 								log.Debug (System.String.Concat("uuencoded content finished. name[", attachment.Name, "] size[", stream.Length, "]"));
 #endif
+							attachment.Size = stream.Length;
 							this._attachments.Add(attachment);
 						}
 						// When decoding to a file, close the stream.
@@ -609,6 +612,7 @@ namespace anmar.SharpMimeTools
 		private System.String _cid;
 		private System.DateTime _mtime = System.DateTime.MinValue;
 		private System.String _name;
+		private long _size;
 		private System.IO.MemoryStream _stream;
 		private System.IO.FileInfo _saved_file;
 		private System.String _sub_type;
@@ -772,7 +776,14 @@ namespace anmar.SharpMimeTools
 			get { return this._top_level_media_type; }
 			set { this._top_level_media_type = value; }
 		}
-
+		/// <summary>
+		/// Gets or sets size (in bytes) for this <see cref="SharpAttachment" /> instance.
+		/// </summary>
+		/// <value>Size of this <see cref="SharpAttachment" /> instance</value>
+		public long Size {
+			get { return this._size; }
+			set { this._size = value; }
+		}
 		/// <summary>
 		/// Gets the <see cref="System.IO.FileInfo" /> of the saved file.
 		/// </summary>

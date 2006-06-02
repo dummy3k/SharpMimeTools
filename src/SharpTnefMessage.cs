@@ -221,6 +221,7 @@ namespace anmar.SharpMimeTools
 								}
 								stream.Write(buffer, 0, size);
 								stream.Flush();
+								attachment_cur.Size = stream.Length;
 								stream.Close();
 								stream = null;
 								attachment_cur.SavedFile.Refresh();
@@ -232,6 +233,7 @@ namespace anmar.SharpMimeTools
 							} else {
 								attachment_cur.Stream.Write(buffer, 0, size);
 								attachment_cur.Stream.Flush();
+								attachment_cur.Size = attachment_cur.Stream.Length;
 							}
 							this._attachments.Add(attachment_cur);
 						}
