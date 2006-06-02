@@ -55,6 +55,10 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		UuDecode = 16,
 		/// <summary>
+		/// If folder where attachemts are saved does not exist, create it.
+		/// </summary>
+		CreateFolder = 32,
+		/// <summary>
 		/// Default options (<b>AllowAttachments</b> and <b>AllowHtml</b>)
 		/// </summary>
 		Default = AllowAttachments | AllowHtml

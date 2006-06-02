@@ -149,10 +149,14 @@ namespace anmar.SharpMimeTools
 		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
 		/// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
 		public SharpMessage( System.IO.Stream message, anmar.SharpMimeTools.MimeTopLevelMediaType types, SharpDecodeOptions options, System.String path, System.String preferredtextsubtype ) {
-			if ( path==null || !System.IO.Directory.Exists(path) )
-				this.ParseMessage(message, types, options, preferredtextsubtype, null);
-			else
-				this.ParseMessage(message, types, options, preferredtextsubtype, path);
+			if ( path!=null && (options&SharpDecodeOptions.CreateFolder)!=SharpDecodeOptions.CreateFolder && !System.IO.Directory.Exists(path) ) {
+#if LOG
+				if ( log.IsErrorEnabled )
+					log.Error(System.String.Concat("Path [", path, "] does not exist and 'SharpDecodeOptions.CreateFolder' was not specified."));
+#endif
+				path=null;
+			}
+			this.ParseMessage(message, types, options, preferredtextsubtype, path);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.String" />.

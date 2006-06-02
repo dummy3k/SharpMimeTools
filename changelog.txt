@@ -1,3 +1,7 @@
+06/01/2006
+ - [SharpDecodeOptions] Added CreateFolder option.
+ - [SharpMessage] If SharpDecodeOptions.CreateFolder is set, create destination folder for attachments if it does not exist (only if there is at least one attachment). 
+
 05/10/2006
  - [SharpMimeTools] Added GetFileName method to unify the SharpMessage and SharpMimeMessage Name properties behavior.
  - [SharpMimeMessage] Use the above in Name property.
