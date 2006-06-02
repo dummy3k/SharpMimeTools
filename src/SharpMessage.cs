@@ -452,6 +452,9 @@ namespace anmar.SharpMimeTools
 						tnef = null;
 					}
 					if ( attachment!=null ) {
+						if ( part.Disposition!=null && part.Disposition=="inline" ) {
+							attachment.Inline = true;
+						}
 						attachment.MimeTopLevelMediaType = part.Header.TopLevelMediaType;
 						attachment.MimeMediaSubType = part.Header.SubType;
 						// Store attachment's CreationTime
@@ -610,6 +613,7 @@ namespace anmar.SharpMimeTools
 #endif
 		private System.DateTime _ctime = System.DateTime.MinValue;
 		private System.String _cid;
+		private bool _inline = false;
 		private System.DateTime _mtime = System.DateTime.MinValue;
 		private System.String _name;
 		private long _size;
@@ -737,6 +741,14 @@ namespace anmar.SharpMimeTools
 		public System.DateTime CreationTime {
 			get { return this._ctime; }
 			set { this._ctime = value; }
+		}
+		/// <summary>
+		/// Gets or sets value indicating whether the current instance is an inline attachment.
+		/// </summary>
+		/// <value><b>true</b> is it's an inline attachment; <b>false</b> otherwise.</value>
+		public bool Inline {
+			get { return this._inline; }
+			set { this._inline = value; }
 		}
 		/// <summary>
 		/// Gets or sets the time when the file associated with this attachment was last written to.

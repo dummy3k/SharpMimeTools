@@ -2,6 +2,8 @@
  - [SharpAttachment] Added Size property.
  - [SharpMessage] Set Size property for attachment instances once they are saved.
  - [SharpTnefMessage] Set Size property for attachment instances once they are saved.
+ - [SharpAttachment] Added Inline property.
+ - [SharpMessage] Set Inline property for attachment instances.
 
 06/01/2006
  - [SharpDecodeOptions] Added CreateFolder option.
