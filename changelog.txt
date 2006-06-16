@@ -3,6 +3,7 @@
  - [SharpMessage] Add three more constructors for easier use (they don't need to supply the mime types, they're inferred from the options one).
  - [SharpMessage] After decoding a tnef part to disk, the read-only stream was left open giving sharing violations under windows.
  - [SharpMimeMessage] Minor performance improvement while using boundary strings.
+ - [doc] Update todo.txt and readme.txt with more accurate info.
 
 06/02/2006
  - [SharpAttachment] Added Size property.

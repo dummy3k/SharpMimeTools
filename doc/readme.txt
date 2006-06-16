@@ -20,10 +20,11 @@ Building
 Dependencies:
  - Microsoft .NET framework 1.1 or later  - http://msdn.microsoft.com/netframework/
    or Mono - http://www.mono-project.com/
- - Log4net - http://logging.apache.org/log4net/
+ - (optional) Log4net - http://logging.apache.org/log4net/
 
 Project files provided for:
  - SharpDevelop 2 - http://www.icsharpcode.net/
+ - MonoDevelop - http://www.monodevelop.com/
  
 For more info visit:
 http://anmar.eu.org/projects/sharpmimetools/development.html
@@ -45,4 +46,4 @@ History
 07/16/2005 - version 0.2b   - Released milestone 0.2
 
 --------------------------------
-Angel Marin 2003-2005 - http://anmar.eu.org/
+Angel Marin 2003-2006 - http://anmar.eu.org/
