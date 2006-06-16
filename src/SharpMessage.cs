@@ -29,16 +29,34 @@ namespace anmar.SharpMimeTools
 	/// </summary>
 	/// <remarks> All the mime complexity is handled internally and all the content is exposed
 	/// parsed and decoded. The code takes care of comments, RFC 2047, encodings, etc.</remarks>
-	/// <example> This sample shows how simple is to parse an e-mail message read from a file.
+	/// <example>Parse a message read from a file enabling the uuencode and ms-tnef decoding and saving attachments to disk.
 	/// <code>
-	/// System.IO.FileStream msg = new System.IO.FileStream ( "message_file.txt", System.IO.FileMode.Open);
+	/// System.IO.FileStream msg = new System.IO.FileStream("message_file.txt", System.IO.FileMode.Open);
+	/// anmar.SharpMimeTools.SharpMessage message = new anmar.SharpMimeTools.SharpMessage(msg, SharpDecodeOptions.Default|SharpDecodeOptions.DecodeTnef|SharpDecodeOptions.UuDecode);
+	/// msg.Close();
+	/// Console.WriteLine(System.String.Concat("From:    [", message.From, "][", message.FromAddress, "]"));
+	/// Console.WriteLine(System.String.Concat("To:      [", message.To, "]"));
+	/// Console.WriteLine(System.String.Concat("Subject: [", message.Subject, "]"));
+	/// Console.WriteLine(System.String.Concat("Date:    [", message.Date, "]"));
+	/// Console.WriteLine(System.String.Concat("Body:    [", message.Body, "]"));
+	/// if ( message.Attachments!=null ) {
+	/// 	foreach ( anmar.SharpMimeTools.SharpAttachment attachment in message.Attachments ) {
+	/// 		attachment.Save(System.Environment.CurrentDirectory, false);
+	/// 		Console.WriteLine(System.String.Concat("Attachment: [", attachment.SavedFile.FullName, "]"));
+	/// 	}
+	/// }
+	/// </code>
+	/// </example>
+	/// <example>This sample shows how simple is to parse an e-mail message read from a file.
+	/// <code>
+	/// System.IO.FileStream msg = new System.IO.FileStream("message_file.txt", System.IO.FileMode.Open);
 	/// anmar.SharpMimeTools.SharpMessage message = new anmar.SharpMimeTools.SharpMessage(msg);
-	/// Console.WriteLine(message.From);
-	/// Console.WriteLine(message.FromAddress);
-	/// Console.WriteLine(message.To);
-	/// Console.WriteLine(message.Date);
-	/// Console.WriteLine(message.Subject);
-	/// Console.WriteLine(message.Body);
+	/// msg.Close();
+	/// Console.WriteLine(System.String.Concat("From:    [", message.From, "][", message.FromAddress, "]"));
+	/// Console.WriteLine(System.String.Concat("To:      [", message.To, "]"));
+	/// Console.WriteLine(System.String.Concat("Subject: [", message.Subject, "]"));
+	/// Console.WriteLine(System.String.Concat("Date:    [", message.Date, "]"));
+	/// Console.WriteLine(System.String.Concat("Body:    [", message.Body, "]"));
 	/// </code>
 	/// </example>
 	public sealed class SharpMessage {
