@@ -162,6 +162,42 @@ namespace anmar.SharpMimeTools
 		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
 		/// </summary>
 		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
+		public SharpMessage( System.IO.Stream message, SharpDecodeOptions options ) : this(message, options, null, null) {
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
+		public SharpMessage( System.IO.Stream message, SharpDecodeOptions options, System.String path ) : this(message, options, path, null) {
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
+		/// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
+		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
+		/// <param name="preferredtextsubtype">A <see cref="System.String" /> specifying the subtype to select for text parts that contain aternative content (plain, html, ...). Specify the <b>null</b> reference to maintain the default behavior (prefer whatever the originator sent as the preferred part). If there is not a text part with this subtype, the default one is used.</param>
+		public SharpMessage( System.IO.Stream message, SharpDecodeOptions options, System.String path, System.String preferredtextsubtype ) {
+			anmar.SharpMimeTools.MimeTopLevelMediaType types = anmar.SharpMimeTools.MimeTopLevelMediaType.text|anmar.SharpMimeTools.MimeTopLevelMediaType.multipart|anmar.SharpMimeTools.MimeTopLevelMediaType.message;
+			if ( (options&SharpDecodeOptions.AllowAttachments)==SharpDecodeOptions.AllowAttachments ) {
+				types = types|anmar.SharpMimeTools.MimeTopLevelMediaType.application|anmar.SharpMimeTools.MimeTopLevelMediaType.audio|anmar.SharpMimeTools.MimeTopLevelMediaType.image|anmar.SharpMimeTools.MimeTopLevelMediaType.video;
+			}
+			if ( path!=null && (options&SharpDecodeOptions.CreateFolder)!=SharpDecodeOptions.CreateFolder && !System.IO.Directory.Exists(path) ) {
+#if LOG
+				if ( log.IsErrorEnabled )
+					log.Error(System.String.Concat("Path [", path, "] does not exist and 'SharpDecodeOptions.CreateFolder' was not specified."));
+#endif
+				path=null;
+			}
+			this.ParseMessage(message, types, options, preferredtextsubtype, path);
+		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="anmar.SharpMimeTools.SharpMessage" /> class based on the supplied <see cref="System.IO.Stream" />.
+		/// </summary>
+		/// <param name="message"><see cref="System.IO.Stream" /> that contains the message content</param>
 		/// <param name="types">A <see cref="anmar.SharpMimeTools.MimeTopLevelMediaType" /> value that specifies the allowed Mime-Types to being decoded.</param>
 		/// <param name="options"><see cref="anmar.SharpMimeTools.SharpDecodeOptions" /> to determine how to do the decoding (must be combined as a bit map).</param>
 		/// <param name="path">A <see cref="System.String" /> specifying the path on which to save the attachments found.</param>
