@@ -4,6 +4,7 @@
  - [SharpMessage] After decoding a tnef part to disk, the read-only stream was left open giving sharing violations under windows.
  - [SharpMimeMessage] Minor performance improvement while using boundary strings.
  - [doc] Update todo.txt and readme.txt with more accurate info.
+ - [nant] Set the copyright notice's year in the documentation base on the current date.
 
 06/02/2006
  - [SharpAttachment] Added Size property.
