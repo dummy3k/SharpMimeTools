@@ -308,31 +308,38 @@ namespace anmar.SharpMimeTools
 						log.Debug (System.String.Format("Looking for multipart {1}, byte {0}", this.mi.start_body, this.mi.header.ContentTypeParameters["boundary"]));
 #endif
 					this.mi.parts.Parent = this;
+					System.String boundary_start = System.String.Concat("--", this.mi.header.ContentTypeParameters["boundary"]);
+					System.String boundary_end = System.String.Concat("--", this.mi.header.ContentTypeParameters["boundary"], "--");
 					for ( line=this.message.ReadLine(); line!=null ; line=this.message.ReadLine() ) {
-						if ( line.Equals( "--" + this.mi.header.ContentTypeParameters["boundary"] ) ) {
+						// It can't be a boundary line
+						if ( line.Length<3 )
+							continue;
+						// Match start boundary line
+						if ( line.Length==boundary_start.Length && line==boundary_start ) {
 							if ( this.mi.parts.Count>0 ) {
 								this.mi.parts.Get( this.mi.parts.Count-1 ).mi.end = this.message.Position_preRead;
 #if LOG
 								if ( log.IsDebugEnabled )
-									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
+									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, boundary_start));
 #endif
 							}
 #if LOG
-							if ( log.IsDebugEnabled ) log.Debug (System.String.Format("Part     {1} found at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
+							if ( log.IsDebugEnabled ) log.Debug (System.String.Format("Part     {1} found at byte {0}", this.message.Position_preRead, boundary_start));
 #endif
 							anmar.SharpMimeTools.SharpMimeMessage msg = new anmar.SharpMimeTools.SharpMimeMessage (this.message, this.message.Position );
 							this.mi.parts.Add (msg);
-						} else if ( line.Equals( "--" + this.mi.header.ContentTypeParameters["boundary"] + "--" ) ) {
+						// Match end boundary line
+						} else if ( line.Length==boundary_end.Length && line==boundary_end ) {
 							this.mi.end = this.message.Position_preRead;
 							if ( this.mi.parts.Count>0 ) {
 								this.mi.parts.Get( this.mi.parts.Count-1 ).mi.end = this.message.Position_preRead;
 #if LOG
 								if ( log.IsDebugEnabled )
-									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, this.mi.header.ContentTypeParameters["boundary"]));
+									log.Debug (System.String.Format("End part {1} at byte {0}", this.message.Position_preRead, boundary_end));
 #endif
 #if LOG
 							} else if ( log.IsDebugEnabled ) {
-								log.Debug (System.String.Format("End part {1} at byte {0}", this.mi.end, this.mi.header.ContentTypeParameters["boundary"]));
+								log.Debug (System.String.Format("End part {1} at byte {0}", this.mi.end, boundary_end));
 #endif
 							}
 							break;
