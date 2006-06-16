@@ -492,9 +492,12 @@ namespace anmar.SharpMimeTools
 								this._attachments.AddRange(tnef.Attachments);
 							}
 							attachment.Close();
-							// The dumped
-							if ( attachment.SavedFile!=null )
+							// Delete the raw tnef file
+							if ( attachment.SavedFile!=null ) {
+								if ( stream!=null && stream.CanRead )
+									stream.Close();
 								attachment.SavedFile.Delete();
+							}
 							attachment = null;
 							tnef.Close();
 #if LOG
@@ -502,7 +505,12 @@ namespace anmar.SharpMimeTools
 								log.Debug(System.String.Concat("ms-tnef stream decoded successfully. Found [", ((tnef.Attachments!=null)?tnef.Attachments.Count:0),"] attachments."));
 							}
 #endif
+						} else {
+							// The read-only stream is no longer needed and locks the file
+							if ( attachment.SavedFile!=null && stream!=null && stream.CanRead )
+								stream.Close();
 						}
+						stream = null;
 						tnef = null;
 					}
 					if ( attachment!=null ) {
