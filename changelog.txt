@@ -1,3 +1,6 @@
+07/05/2006
+ - Released as version 0.6b [685] r261.
+
 06/16/2006
  - [SharpMessage] Improve examples in documentation.
  - [SharpMessage] Add three more constructors for easier use (they don't need to supply the mime types, they're inferred from the options one).
