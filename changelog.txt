@@ -2,6 +2,7 @@
  - Version number set to 0.7
  - [SharpMimeTools] QuotedPrintable2Unicode: rewritten to play with with multibyte encodings. It's also a significant performance improvement.
  - [SharpMimeTools] QuotedPrintable2Unicode: stop using ref paramenter.
+ - [SharpMimeTools] parseCharSet: Add log statement for unsupported or malformed encoding string.
 
 07/05/2006
  - Released as version 0.6b [685] r261.

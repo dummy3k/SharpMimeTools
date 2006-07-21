@@ -76,7 +76,13 @@ namespace anmar.SharpMimeTools
 		public static System.Text.Encoding parseCharSet ( System.String charset ) {
 			try {
 				return System.Text.Encoding.GetEncoding (charset);
+#if LOG
+			} catch ( System.Exception e ) {
+				if ( log.IsErrorEnabled )
+					log.Error(System.String.Concat("Error parsing charset: [", charset, "]"), e);
+#else
 			} catch ( System.Exception ) {
+#endif
 				return null;
 			}
 		}
