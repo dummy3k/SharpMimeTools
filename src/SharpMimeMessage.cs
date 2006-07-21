@@ -384,9 +384,7 @@ namespace anmar.SharpMimeTools
 			get {
 				switch (this.Header.ContentTransferEncoding) {
 					case "quoted-printable":
-						System.String body = this.Body;
-						anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, ref body );
-						return body;
+						return anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, this.Body );
 					case "base64":
 						System.Byte[] tmp = null;
 						try {

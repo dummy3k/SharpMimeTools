@@ -65,6 +65,9 @@ namespace anmar.SharpMimeTools
 			}
 			return name;
 		}
+		private static bool IsValidHexChar ( System.Char ch ) {
+			return ( (ch>0x2F && ch<0x3A) || (ch>0x40 && ch<0x47) || (ch>0x60 && ch<0x67) );
+		}
 		/// <summary>
 		/// Parses a <see cref="System.Text.Encoding" /> from a charset name
 		/// </summary>
@@ -208,56 +211,63 @@ namespace anmar.SharpMimeTools
 		/// Decode rfc 2047 definition of quoted-printable
 		/// </summary>
 		/// <param name="charset">charset to use when decoding</param>
-		/// <param name="orig"><c>string</c> to decode</param>
+		/// <param name="orig"><see cref="System.String" /> to decode</param>
 		/// <returns>the decoded <see cref="System.String" /></returns>
 		public static System.String QuotedPrintable2Unicode ( System.String charset, System.String orig ) {
 			System.Text.Encoding enc = anmar.SharpMimeTools.SharpMimeTools.parseCharSet (charset);
-			if ( enc==null || orig==null )
-				return orig;
-			anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( enc, ref orig );
-			return orig;
+			return anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( enc, orig );
 		}
 		/// <summary>
 		/// Decode rfc 2047 definition of quoted-printable
 		/// </summary>
 		/// <param name="enc"><see cref="System.Text.Encoding" /> to use</param>
-		/// <param name="orig"><c>string</c> to decode</param>
-		public static void QuotedPrintable2Unicode ( System.Text.Encoding enc, ref System.String orig ) {
+		/// <param name="orig"><see cref="System.String" /> to decode</param>
+		/// <returns>the decoded <see cref="System.String" /></returns>
+		public static System.String QuotedPrintable2Unicode ( System.Text.Encoding enc, System.String orig ) {
 			if ( enc==null || orig==null )
-				return;
+				return orig;
 
 			System.Text.StringBuilder decoded = new System.Text.StringBuilder(orig);
-			int i = 0;
-			System.String hexNumber;
-			System.Byte[] ch = new System.Byte[1];
-			while ( i < decoded.Length - 2 ) {
-				System.String decodedItem = null;
-				if ( decoded[i] == '=' ) {
-					hexNumber = decoded.ToString(i+1, 2);
-					if ( hexNumber.Equals(ABNF.CRLF) ) {
-						decodedItem = System.String.Empty;
-					// Do not replace 3D(=)
-					} else if ( hexNumber.ToUpper().Equals("3D") ) {
-						decodedItem = null;
+			int bytecount=0, offset=0;
+			System.Byte[] ch = new System.Byte[24];
+			for ( int i=0, total=decoded.Length; i<total; ) {
+				// Possible encoded byte
+				if ( decoded[i] == '=' && (total-i)>2 ) {
+					System.String hex = decoded.ToString(i+1, 2);
+					// encoded byte
+					if ( IsValidHexChar(hex[0]) && IsValidHexChar(hex[1]) ) {
+						ch[bytecount++] = System.Convert.ToByte(hex, 16);
+						offset+=3;
+						i+=3;
+					// soft line break
+					} else if ( hex==ABNF.CRLF ) {
+						offset+=3;
+						i+=3;
+					// there shouldn't be a '=' without being encoded, so we remove it
 					} else {
-						try {
-							//TODO: this ugly workaround should disapear
-							ch[0] = System.Convert.ToByte(hexNumber, 16);
-							decodedItem = enc.GetString ( ch );
-						} catch ( System.Exception ) {}
+						offset++;
+						i++;
 					}
-					if ( decodedItem!=null )
-						decoded.Replace( "=" + hexNumber, decodedItem );
-				}
-				if ( decodedItem!=null )
-					i+=decodedItem.Length;
-				else
+					// Replace chars with decoded bytes if we have finished the series of encoded bytes
+					// or have filled the buffer.
+					if ( offset>0 && (bytecount==24 || i==total || (total-i)<3 || decoded[i]!='=') ) {
+						i-=offset;
+						total-=offset;
+						decoded.Remove(i, offset);
+						if ( bytecount>0 ) {
+							System.String decodedItem = enc.GetString(ch, 0, bytecount);
+							decoded.Insert(i, decodedItem);
+							i+=decodedItem.Length;
+							total+=decodedItem.Length;
+						}
+						bytecount=0;
+						offset=0;
+					}
+				} else {
 					i++;
+				}
 			}
-			decoded.Replace("=3D", "=");
-			decoded.Replace("=3d", "=");
-			orig = decoded.ToString();
-			return;
+			return decoded.ToString();
 		}
 		/// <summary>
 		/// rfc 2047 header body decoding

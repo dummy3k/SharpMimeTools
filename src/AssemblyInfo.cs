@@ -32,7 +32,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("This program is under LGPL v2.1 or later")]
 [assembly: AssemblyCulture("")]		
 
-[assembly: AssemblyVersion("0.6.*")]
+[assembly: AssemblyVersion("0.7.*")]
 
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile(@"SharpMimeTools.snk")]
