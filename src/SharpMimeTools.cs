@@ -74,6 +74,8 @@ namespace anmar.SharpMimeTools
 		/// <param name="charset">charset to parse</param>
 		/// <returns>A <see cref="System.Text.Encoding" /> that represents the given <c>charset</c></returns>
 		public static System.Text.Encoding parseCharSet ( System.String charset ) {
+			if ( charset==null || charset.Length==0 )
+				return null;
 			try {
 				return System.Text.Encoding.GetEncoding (charset);
 #if LOG
