@@ -175,7 +175,7 @@ namespace anmar.SharpMimeTools
 						attachment_cur.Name = name;
 					// Attachment name
 					} else if ( att_n==TnefAttribute.AttachTitle ) {
-						if ( attachment_cur!=null && att_t==TnefDataType.atpString && buffer!=null && this._attachments.Count>0 ) {
+						if ( attachment_cur!=null && att_t==TnefDataType.atpString && buffer!=null ) {
 							// NULL terminated string
 							if ( buffer[size-1]=='\0' ) {
 								size--;

@@ -1,3 +1,6 @@
+11/29/2006
+ - [SharpTnefMessage] When file name of the first attachment was before data in the stream, it wasn't being assigned.
+
 07/21/2006
  - Version number set to 0.7
  - [SharpMimeTools] QuotedPrintable2Unicode: rewritten to play with with multibyte encodings. It's also a significant performance improvement.
