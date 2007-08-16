@@ -59,6 +59,10 @@ namespace anmar.SharpMimeTools
 		/// </summary>
 		CreateFolder = 32,
 		/// <summary>
+		/// Do not decode <i>message/rfc822</i> parts recursively and present them as attachments.
+		/// </summary>
+		NotRecursiveRfc822 = 64,
+		/// <summary>
 		/// Default options (<b>AllowAttachments</b> and <b>AllowHtml</b>)
 		/// </summary>
 		Default = AllowAttachments | AllowHtml

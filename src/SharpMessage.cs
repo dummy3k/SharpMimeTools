@@ -355,10 +355,17 @@ namespace anmar.SharpMimeTools
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.multipart:
 				case anmar.SharpMimeTools.MimeTopLevelMediaType.message:
 					// TODO: allow other subtypes of "message"
-					// Only message/rfc822 allowed, other subtypes ignored
-					if ( part.Header.TopLevelMediaType.Equals(anmar.SharpMimeTools.MimeTopLevelMediaType.message)
-						 && !part.Header.SubType.Equals("rfc822") )
-						break;
+					if ( part.Header.TopLevelMediaType.Equals(anmar.SharpMimeTools.MimeTopLevelMediaType.message) ) {
+						// Only message/rfc822 allowed, other subtypes ignored
+						if ( part.Header.SubType=="rfc822" ) {
+							// If NotRecursiveRfc822 option is set, handle part as an attachment
+							if ( (options&anmar.SharpMimeTools.SharpDecodeOptions.NotRecursiveRfc822)==anmar.SharpMimeTools.SharpDecodeOptions.NotRecursiveRfc822 ) {
+								goto case anmar.SharpMimeTools.MimeTopLevelMediaType.application;
+							}
+						} else {
+							break;
+						}
+					}
 					if ( part.Header.SubType.Equals ("alternative") ) {
 						if ( part.PartsCount>0 ) {
 							anmar.SharpMimeTools.SharpMimeMessage altenative = null;
@@ -403,7 +410,7 @@ namespace anmar.SharpMimeTools
 								this.ParseMessage(altenative, types, html, options, preferredtextsubtype, path);
 							}
 						}
-					// TODO: Take into account each subtype of "multipart"
+					// TODO: Take into account each subtype of "multipart" and "message"
 					} else if ( part.PartsCount>0 ) {
 						foreach ( anmar.SharpMimeTools.SharpMimeMessage item in part ) {
 							this.ParseMessage(item, types, html, options, preferredtextsubtype, path);
