@@ -92,7 +92,7 @@ namespace anmar.SharpMimeTools
 						break;
 					case "base64":
 						try {
-							buffer = System.Convert.FromBase64String(this.Body);
+							buffer = System.Convert.FromBase64String(this.GetRawBody(true));
 #if LOG
 						} catch ( System.Exception e ) {
 							if ( log.IsErrorEnabled )
@@ -107,7 +107,7 @@ namespace anmar.SharpMimeTools
 					case "8bit":
 					case "binary":
 					case null:
-						buffer = System.Text.Encoding.ASCII.GetBytes(this.Body);
+						buffer = System.Text.Encoding.ASCII.GetBytes(this.GetRawBody(true));
 						break;
 					default:
 #if LOG
@@ -282,6 +282,19 @@ namespace anmar.SharpMimeTools
 		public anmar.SharpMimeTools.SharpMimeMessage GetPart ( int index ) {
 			return this.Parts.Get ( index );
 		}
+		private System.String GetRawBody( bool rawparts ) {
+			this.parse();
+			if ( rawparts || this.mi.parts.Count == 0 ) {
+				this.message.Encoding = this.mi.header.Encoding;
+				if ( this.mi.end ==-1 ) {
+					return this.message.ReadAll(this.mi.start_body);
+				} else {
+					return this.message.ReadLines(this.mi.start_body, this.mi.end);
+				}
+			} else {
+				return null;
+			}
+		}
 		private bool parse () {
 			bool error = false;
 #if LOG
@@ -363,17 +376,7 @@ namespace anmar.SharpMimeTools
 		/// <returns></returns>
 		public System.String Body {
 			get {
-				this.parse();
-				if ( this.mi.parts.Count == 0 ) {
-					this.message.Encoding = this.mi.header.Encoding;
-					if ( this.mi.end ==-1 ) {
-						return this.message.ReadAll(this.mi.start_body);
-					} else {
-						return this.message.ReadLines(this.mi.start_body, this.mi.end);
-					}
-				} else {
-					return null;
-				}
+				return this.GetRawBody(false);
 			}
 		}
 		/// <summary>
@@ -384,11 +387,11 @@ namespace anmar.SharpMimeTools
 			get {
 				switch (this.Header.ContentTransferEncoding) {
 					case "quoted-printable":
-						return anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, this.Body );
+						return anmar.SharpMimeTools.SharpMimeTools.QuotedPrintable2Unicode ( this.mi.header.Encoding, this.GetRawBody(false) );
 					case "base64":
 						System.Byte[] tmp = null;
 						try {
-							tmp = System.Convert.FromBase64String(this.Body);
+							tmp = System.Convert.FromBase64String(this.GetRawBody(false));
 #if LOG
 						} catch ( System.Exception e ) {
 							if ( log.IsErrorEnabled )
@@ -402,7 +405,7 @@ namespace anmar.SharpMimeTools
 						else
 							return System.String.Empty;
 				}
-				return this.Body;
+				return this.GetRawBody(false);
 			}
 		}
 		/// <summary>

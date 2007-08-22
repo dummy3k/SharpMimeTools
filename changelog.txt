@@ -1,3 +1,10 @@
+08/22/2007
+ - [SharpMimeMessage] DumpBody: Allow dumping the raw content of parts even when they have other parts nested.
+
+08/16/2007
+ - [SharpDecodeOptions] Added NotRecursiveRfc822 option.
+ - [SharpMessage] If SharpDecodeOptions.NotRecursiveRfc822 is set, nested messages are exposed as attachments.
+
 11/29/2006
  - [SharpTnefMessage] When file name of the first attachment was before data in the stream, it wasn't being assigned.
 
