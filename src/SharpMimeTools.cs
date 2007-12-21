@@ -188,7 +188,7 @@ namespace anmar.SharpMimeTools
 			System.Collections.Specialized.StringDictionary fieldbodycol = new System.Collections.Specialized.StringDictionary ();
 			System.String[] words = fieldbody.Split(new Char[]{';'});
 			if ( words.Length>0 ) {
-				fieldbodycol.Add (field.ToLower(), words[0].ToLower());
+				fieldbodycol.Add (field.ToLower(), words[0].ToLower().Trim());
 				for (int i=1; i<words.Length; i++ ) {
 					System.String[] param = words[i].Trim(new Char[]{' ', '\t'}).Split(new Char[]{'='}, 2);
 					if ( param.Length==2 ) {
@@ -199,7 +199,7 @@ namespace anmar.SharpMimeTools
 								param[1] += ";" + words[++i];
 							} while  ( !words[i].EndsWith("\"") && i<words.Length);
 						}
-						fieldbodycol.Add ( param[0], anmar.SharpMimeTools.SharpMimeTools.parserfc2047Header (param[1].TrimEnd(';').Trim('\"')) );
+						fieldbodycol.Add ( param[0], anmar.SharpMimeTools.SharpMimeTools.parserfc2047Header (param[1].TrimEnd(';').Trim('\"', ' ')) );
 					}
 				}
 			}

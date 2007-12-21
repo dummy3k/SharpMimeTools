@@ -1,3 +1,6 @@
+12/16/2007
+ - [SharpMimeTools] parseHeaderFieldBody: extra spaces must be ignored.
+
 08/22/2007
  - [SharpMimeMessage] DumpBody: Allow dumping the raw content of parts even when they have other parts nested.
 
