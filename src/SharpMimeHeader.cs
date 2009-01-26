@@ -52,8 +52,8 @@ namespace anmar.SharpMimeTools
 				this.enc = null;
 				try {
 					this.contenttype = anmar.SharpMimeTools.SharpMimeTools.parseHeaderFieldBody ( "Content-Type", headers["Content-Type"].ToString() );
-					this.TopLevelMediaType = (anmar.SharpMimeTools.MimeTopLevelMediaType)System.Enum.Parse(TopLevelMediaType.GetType(), this.contenttype["Content-Type"].Split('/')[0], true);
-					this.subtype = this.contenttype["Content-Type"].Split('/')[1];
+					this.TopLevelMediaType = (anmar.SharpMimeTools.MimeTopLevelMediaType)System.Enum.Parse(TopLevelMediaType.GetType(), this.contenttype["Content-Type"].Split('/')[0].Trim(), true);
+					this.subtype = this.contenttype["Content-Type"].Split('/')[1].Trim();
 					this.enc = anmar.SharpMimeTools.SharpMimeTools.parseCharSet ( this.contenttype["charset"] );
 				} catch (System.Exception) {
 					this.enc = anmar.SharpMimeTools.SharpMimeHeader.default_encoding;

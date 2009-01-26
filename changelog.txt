@@ -2,6 +2,7 @@
  - [SharpMimeMessageStream] Add SaveTo method.
  - [SharpMimeMessage] DumpBody: save binary parts without messing with actual content.
  - [SharpMimeTools] rfc2047decode: Some chars were missing
+ - [SharpMimeHeader]: extra spaces must be ignored.
 
 12/16/2007
  - [SharpMimeTools] parseHeaderFieldBody: extra spaces must be ignored.
