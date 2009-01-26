@@ -286,7 +286,7 @@ namespace anmar.SharpMimeTools
 			System.String[] words;
 			System.String[] wordetails;
 
-			System.Text.RegularExpressions.Regex rfc2047format = new System.Text.RegularExpressions.Regex (@"(=\?[\-a-zA-Z0-9]+\?[qQbB]\?[a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^]+\?=)\s*", System.Text.RegularExpressions.RegexOptions.ECMAScript);
+			System.Text.RegularExpressions.Regex rfc2047format = new System.Text.RegularExpressions.Regex (@"(=\?[\-a-zA-Z0-9]+\?[qQbB]\?[a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^\(\)]+\?=)\s*", System.Text.RegularExpressions.RegexOptions.ECMAScript);
 			// No rfc2047 format
 			if ( !rfc2047format.IsMatch (word) ){
 #if LOG
@@ -301,7 +301,7 @@ namespace anmar.SharpMimeTools
 #endif
 			words = rfc2047format.Split ( word );
 			word = System.String.Empty;
-			rfc2047format = new System.Text.RegularExpressions.Regex (@"=\?([\-a-zA-Z0-9]+)\?([qQbB])\?([a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^]+)\?=", System.Text.RegularExpressions.RegexOptions.ECMAScript);
+			rfc2047format = new System.Text.RegularExpressions.Regex (@"=\?([\-a-zA-Z0-9]+)\?([qQbB])\?([a-zA-Z0-9=_\-\.$%&/\'\\!:;{}\+\*\|@#~`^\(\)]+)\?=", System.Text.RegularExpressions.RegexOptions.ECMAScript);
 			for ( int i=0; i<words.GetLength (0); i++ ) {
 				if ( !rfc2047format.IsMatch (words[i]) ){
 					word += words[i];
