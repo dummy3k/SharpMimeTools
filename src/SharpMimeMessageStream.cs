@@ -160,6 +160,26 @@ namespace anmar.SharpMimeTools
 			}
 			return (this.finalpos!=this.initpos)?first_line:null;
 		}
+		public void SaveTo ( System.IO.Stream stream, long start, long end ) {
+			if ( start<0 || stream==null || !stream.CanWrite )
+				return;
+			this.SeekPoint(start);
+			if ( end==-1 ) {
+				end = this.stream.Length;
+			}
+			int n = 0;
+			long pending = end-start;
+			if ( pending<=0 )
+				return;
+			byte[] buffer = new byte[(pending>4*1024)?4*1024:pending];
+			do {
+				n = this.stream.Read(buffer, 0, (pending>buffer.Length)?buffer.Length:(int)pending);
+				if ( n>0 ) {
+					stream.Write(buffer, 0, n);
+					pending -= n;
+				}
+			} while ( n>0 );
+		}
 		public bool SeekLine ( long line ) {
 			long linenumber = 0;
 			this.SeekOrigin();

@@ -84,6 +84,7 @@ namespace anmar.SharpMimeTools
 			if ( stream==null )
 				return false;
 			bool error = false;
+			bool raw = false;
 			if ( stream.CanWrite ) {
 				System.Byte[] buffer = null;
 				switch (this.Header.ContentTransferEncoding) {
@@ -107,7 +108,7 @@ namespace anmar.SharpMimeTools
 					case "8bit":
 					case "binary":
 					case null:
-						buffer = System.Text.Encoding.ASCII.GetBytes(this.GetRawBody(true));
+						raw = true;
 						break;
 					default:
 #if LOG
@@ -118,8 +119,13 @@ namespace anmar.SharpMimeTools
 						break;
 				}
 				try {
-					if ( !error && buffer!=null )
-						stream.Write ( buffer, 0, buffer.Length );
+					if ( !error ) {
+						if ( raw ) {
+							this.message.SaveTo (stream, this.mi.start_body, this.mi.end);
+						} else if ( buffer!=null ) {
+							stream.Write ( buffer, 0, buffer.Length );
+						}
+					}
 #if LOG
 				} catch ( System.Exception e ) {
 

@@ -1,3 +1,7 @@
+01/26/2009
+ - [SharpMimeMessageStream] Add SaveTo method.
+ - [SharpMimeMessage] DumpBody: save binary parts without messing with actual content.
+
 12/16/2007
  - [SharpMimeTools] parseHeaderFieldBody: extra spaces must be ignored.
 
