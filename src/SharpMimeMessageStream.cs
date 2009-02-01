@@ -175,8 +175,18 @@ namespace anmar.SharpMimeTools
 			do {
 				n = this.stream.Read(buffer, 0, (pending>buffer.Length)?buffer.Length:(int)pending);
 				if ( n>0 ) {
-					stream.Write(buffer, 0, n);
 					pending -= n;
+					if ( pending==0 ) {
+						if ( buffer[n-1]=='\n' ) {
+							n--;
+						}
+						if ( n>0 && buffer[n-1]=='\r' ) {
+							n--;
+						}
+					}
+					if ( n>0 )
+						stream.Write(buffer, 0, n);
+					
 				}
 			} while ( n>0 );
 		}
