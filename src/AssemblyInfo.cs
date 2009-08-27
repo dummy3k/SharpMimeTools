@@ -35,5 +35,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("0.7.*")]
 
 [assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile(@"SharpMimeTools.snk")]
 [assembly: AssemblyKeyName("")]

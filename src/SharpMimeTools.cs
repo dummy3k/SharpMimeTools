@@ -46,7 +46,7 @@ namespace anmar.SharpMimeTools
 				name = System.IO.Path.GetFileName(name);
 			} catch ( System.ArgumentException ) {
 				// Remove invalid chars
-				foreach ( char ichar in System.IO.Path.InvalidPathChars ) {
+				foreach ( char ichar in System.IO.Path.GetInvalidPathChars() ) {
 					name = name.Replace ( ichar.ToString(), System.String.Empty );
 				}
 				name = System.IO.Path.GetFileName(name);
